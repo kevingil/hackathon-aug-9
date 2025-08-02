@@ -194,23 +194,21 @@ class ChatService:
 
     def _execute_tool(self, tool_name, tool_input):
         """Execute a tool and return the result."""
+        print(f"EXECUTING TOOL: {tool_name} WITH ARGUMENTS: {tool_input}")
         try:
             if tool_name == "weather":
                 return weather(tool_input["location"])
-            elif tool_name == "search":
-                # Run search manually using Composio, query is the "q" param
+            elif tool_name != "weather":
                 composio = Composio()
-                query = tool_input.get("query", "")
-                print(f"Search Query: {query}")
-
                 result = composio.tools.execute(
                     "COMPOSIO_SEARCH_FINANCE_SEARCH",
                     user_id=self.user_id,
-                    arguments={"query": query},
+                    arguments=input,
                 )
                 print(f"Composio Search results: {result}")
 
                 return {"search_results": result}
+
             else:
                 return {"error": f"Unknown tool: {tool_name}"}
         except Exception as e:

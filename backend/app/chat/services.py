@@ -1,7 +1,10 @@
-import anthropic
+import anthropic # type: ignore
 import os
 import json
-from app.agent.tools.example import weather, news
+from app.agent.tools.example import weather # type: ignore
+from composio import Composio
+from composio_anthropic import AnthropicProvider
+
 
 class ChatService:
     def __init__(self):
@@ -10,6 +13,10 @@ class ChatService:
         self.model_name = "claude-3-7-sonnet-20250219"
         self.max_tokens = 4000
         self.thinking_budget_tokens = 2000
+        
+        # Initialize Composio
+        self.composio = Composio()
+        self.user_id = "0000-1111-2222"
         
         # Define tools (same as agent.py)
         self.tools = [
@@ -28,17 +35,17 @@ class ChatService:
                 }
             },
             {
-                "name": "news",
-                "description": "Get latest news headlines for a topic.",
+                "name": "search",
+                "description": "Search the web for information on any topic.",
                 "input_schema": {
                     "type": "object",
                     "properties": {
-                        "topic": {
+                        "query": {
                             "type": "string",
-                            "description": "The topic to get news about."
+                            "description": "The search query to look up."
                         }
                     },
-                    "required": ["topic"]
+                    "required": ["query"]
                 }
             }
         ]
@@ -212,8 +219,20 @@ class ChatService:
         try:
             if tool_name == "weather":
                 return weather(tool_input["location"])
-            elif tool_name == "news":
-                return news(tool_input["topic"])
+            elif tool_name == "search":
+                # Run search manually using Composio, query is the "q" param
+                composio = Composio()
+                query = tool_input.get("query", "")
+                print(f"Search Query: {query}")
+
+                result = composio.tools.execute(
+                    "COMPOSIO_SEARCH_FINANCE_SEARCH",
+                    user_id=self.user_id,
+                    arguments={"query": query}
+                )
+                print(f"Composio Search results: {result}")
+
+                return {"search_results": result}
             else:
                 return {"error": f"Unknown tool: {tool_name}"}
         except Exception as e:

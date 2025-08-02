@@ -3,6 +3,8 @@ import { Link, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { PROJECT_NAME } from "../../data/ProjectName";
 import { PROJECT_LOGO } from "../../data/ProjectLogo";
+import { BASE_URL } from "../../api/url";
+
 const Navigation = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -14,7 +16,7 @@ const Navigation = () => {
     localStorage.removeItem("token");
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:8080/auth/logout", {
+      const res = await fetch(`${BASE_URL}/auth/logout`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

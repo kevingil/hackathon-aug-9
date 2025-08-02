@@ -14,20 +14,6 @@ tool_definitions = [
         },
     },
     {
-        "name": "search",
-        "description": "Search the web for information on any topic.",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "query": {
-                    "type": "string",
-                    "description": "The search query to look up.",
-                }
-            },
-            "required": ["query"],
-        },
-    },
-    {
         "name": "COMPOSIO_SEARCH_DUCK_DUCK_GO_SEARCH",
         "description": "The duckduckgosearch class utilizes the composio duckduckgo search api to perform searches, focusing on web information and details. it leverages the duckduckgo search engine via the composio duckduckgo search api to retrieve relevant web data based on the provided query.",
         "input_schema": {

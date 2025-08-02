@@ -8,7 +8,7 @@ export default defineConfig({
     host: true, // equivalent to 0.0.0.0
     port: 5173,
     proxy: {
-      "/api": "http://backend:5000",
+      "/api": "http://backend:8080",
     },
   },
 });

@@ -191,20 +191,6 @@ const ChatInterface = () => {
 
         <div className={`bg-gray-50 border-l border-gray-100 transition-all duration-300 w-full overflow-y-auto`}>
           <div className="h-full ">
-            <div className="sticky top-0 bg-gray-50 border-b border-gray-200 px-6 py-4 z-10">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900">Financial Dashboard</h3>
-                <button
-                  onClick={toggleFinancialCollapsed}
-                  className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                      d={isFinancialCollapsed ? "M4 8h16M4 16h16" : "M20 12H4"} />
-                  </svg>
-                </button>
-              </div>
-            </div>
             <div className="p-6">
               <FinancialDashboard 
                 onToggle={toggleFinancialCollapsed}

@@ -115,11 +115,6 @@ const ChatInterface = () => {
 
   return (
     <div className="flex flex-col h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <h1 className="text-xl font-semibold text-gray-900">AI Assistant</h1>
-        <p className="text-sm text-gray-500">Chat with our reasoning AI that can use tools</p>
-      </div>
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">

@@ -1,7 +1,7 @@
 import anthropic  # type: ignore
 import json
 from app.agent.tools.example import weather  # type: ignore
-from app.agent.tools.functions import analyze_results, format_tool_results_to_markdown  # type: ignore
+from app.agent.tools.functions import analyze_results, analyze_user_account  # type: ignore
 from app.agent.tools.definitions import tool_definitions  # type: ignore
 from composio import Composio  # type: ignore
 
@@ -258,6 +258,12 @@ class ChatService:
                 print(f"Weather tool result: {result}")
                 return result
             elif tool_name != "weather":
+                if tool_name == "analyze_user_account":
+                    result = analyze_user_account(tool_input)
+                    return {"search_results": result}
+                elif tool_name == "analyze_results":
+                    result = analyze_results(tool_input)
+                    return {"search_results": result}
                 print("Executing Composio tool for non-weather request")
                 print(f"User ID: {self.user_id}")
                 composio = Composio()

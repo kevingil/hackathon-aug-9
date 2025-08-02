@@ -1,5 +1,7 @@
 import anthropic  # type: ignore
 from app.chat.schemas import User
+from app.agent.tools.definitions import tool_definitions  # type: ignore
+
 from pydantic import BaseModel, Field
 from typing import List
 
@@ -128,7 +130,7 @@ def analyze_user_account(user: User) -> str:
         messages=[
             {
                 "role": "user",
-                "content": f"analyze my finances to help me make better decisions: {user_formated}",
+                "content": f"analyze my finances to provide useful advice on how to improve my finances: {user_formated}",
             }
         ],
         response_model=UserAnalysis,

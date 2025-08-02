@@ -32,6 +32,103 @@ const FinancialDashboard = ({ onToggle, isCollapsed = false }: FinancialDashboar
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const transactionsPerPage = 10;
 
+  // AI Advisor drawer state
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  // Mock AI notifications data
+  const mockNotifications = [
+    {
+      id: 1,
+      type: 'warning',
+      title: 'High Spending Alert',
+      message: "You've spent $1,247 this week, which is 23% above your usual pattern. Consider reviewing your dining expenses.",
+      timestamp: '2 hours ago',
+      severity: 'medium',
+      category: 'spending',
+      actionable: true,
+      insights: {
+        spentAmount: 1247,
+        expectedAmount: 1012,
+        difference: 235,
+        category: 'dining',
+        trend: 'increasing'
+      }
+    },
+    {
+      id: 2,
+      type: 'success',
+      title: 'Savings Goal Progress',
+      message: "Great job! You're 78% towards your $2,000 monthly savings goal. You've saved $1,560 so far.",
+      timestamp: '6 hours ago',
+      severity: 'low',
+      category: 'savings',
+      actionable: false,
+      insights: {
+        savedAmount: 1560,
+        goalAmount: 2000,
+        progressPercent: 78,
+        remainingDays: 12
+      }
+    },
+    {
+      id: 3,
+      type: 'info',
+      title: 'Monthly Budget Analysis',
+      message: "Your entertainment spending is trending 15% lower than last month. You have extra budget available for other categories.",
+      timestamp: '1 day ago',
+      severity: 'low',
+      category: 'budget',
+      actionable: true,
+      insights: {
+        category: 'entertainment',
+        currentSpent: 245,
+        lastMonthSpent: 289,
+        budgetRemaining: 155,
+        trend: 'decreasing'
+      }
+    },
+    {
+      id: 4,
+      type: 'urgent',
+      title: 'Unusual Transaction Pattern',
+      message: "I noticed 3 large transactions over $500 in the past week. This is unusual for your spending pattern. Review if needed.",
+      timestamp: '2 days ago',
+      severity: 'high',
+      category: 'security',
+      actionable: true,
+      insights: {
+        transactionCount: 3,
+        averageAmount: 567,
+        timeframe: '7 days',
+        flaggedTransactions: [
+          { amount: 542, merchant: 'Electronics Store', date: '2024-01-15' },
+          { amount: 678, merchant: 'Home Improvement', date: '2024-01-16' },
+          { amount: 489, merchant: 'Department Store', date: '2024-01-17' }
+        ]
+      }
+    },
+    {
+      id: 5,
+      type: 'tip',
+      title: 'Smart Saving Opportunity',
+      message: "Based on your income pattern, you could save an additional $320/month by optimizing your subscription services.",
+      timestamp: '3 days ago',
+      severity: 'low',
+      category: 'optimization',
+      actionable: true,
+      insights: {
+        potentialSavings: 320,
+        subscriptionCount: 12,
+        unusedServices: 3,
+        recommendations: [
+          'Cancel unused streaming services: $45/month',
+          'Switch to annual billing: $85/month saved',
+          'Bundle services for discount: $190/month saved'
+        ]
+      }
+    }
+  ];
+
   useEffect(() => {
     const calculateSummary = (data: FinancialUser): FinancialSummary => {
       const totalBalance = data.accounts.reduce((sum, account) => sum + account.balance, 0);
@@ -432,16 +529,15 @@ const FinancialDashboard = ({ onToggle, isCollapsed = false }: FinancialDashboar
       <div className="p-4 border-b">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-gray-900">Financial Overview</h3>
-          {onToggle && (
-            <button
-              onClick={onToggle}
-              className="text-gray-500 hover:text-gray-700"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-          )}
+          <button
+            onClick={() => setIsDrawerOpen(true)}
+            className="relative flex items-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-600 hover:text-blue-700 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+          >
+            🚀 Notifications
+            {mockNotifications.some(n => n.severity === 'high') && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-2 h-2"></span>
+            )}
+          </button>
         </div>
       </div>
 
@@ -770,6 +866,223 @@ const FinancialDashboard = ({ onToggle, isCollapsed = false }: FinancialDashboar
           </div>
         </div>
       </div>
+
+      {/* AI Advisor Drawer */}
+      {isDrawerOpen && (
+        <div className="fixed inset-0 z-50 overflow-hidden">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black bg-opacity-50 transition-opacity"
+            onClick={() => setIsDrawerOpen(false)}
+          />
+          
+          {/* Drawer */}
+          <div className="absolute right-0 top-0 h-full w-[700px] bg-white shadow-xl transform transition-transform">
+
+            <div className="p-4 h-full overflow-y-auto">
+              <div className="space-y-4">
+              <div className="">
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-3">
+                  <div>
+                    <h2 className="text-lg font-semibold">Notifications</h2>
+                    <p className="text-black text-sm">Real-time insights & recommendations</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setIsDrawerOpen(false)}
+                  className="text-gray-500 hover:text-gray-500 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+                {mockNotifications.map((notification) => (
+                  <div
+                    key={notification.id}
+                    className={`border rounded-lg p-4 ${
+                      notification.type === 'urgent' ? 'border-red-200 bg-red-50' :
+                      notification.type === 'warning' ? 'border-yellow-200 bg-yellow-50' :
+                      notification.type === 'success' ? 'border-green-200 bg-green-50' :
+                      notification.type === 'info' ? 'border-blue-200 bg-blue-50' :
+                      'border-gray-200 bg-gray-50'
+                    }`}
+                  >
+                    {/* Notification Header */}
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${
+                          notification.type === 'urgent' ? 'bg-red-500' :
+                          notification.type === 'warning' ? 'bg-yellow-500' :
+                          notification.type === 'success' ? 'bg-green-500' :
+                          notification.type === 'info' ? 'bg-blue-500' :
+                          'bg-gray-500'
+                        }`} />
+                        <span className="font-medium text-gray-900">{notification.title}</span>
+                      </div>
+                      <span className="text-xs text-gray-500">{notification.timestamp}</span>
+                    </div>
+
+                    {/* Message */}
+                    <p className="text-sm text-gray-700 mb-3">{notification.message}</p>
+
+                    {/* Insights Data */}
+                    {notification.insights && (
+                      <div className="bg-white rounded-md p-3 border border-gray-100">
+                        <h4 className="text-xs font-medium text-gray-600 uppercase tracking-wide mb-2">
+                          Insights & Data
+                        </h4>
+                        
+                        {notification.category === 'spending' && (
+                          <div className="grid grid-cols-2 gap-2 text-sm">
+                            <div>
+                              <span className="text-gray-500">Spent:</span>
+                              <span className="font-medium ml-1">${notification.insights.spentAmount}</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-500">Expected:</span>
+                              <span className="font-medium ml-1">${notification.insights.expectedAmount}</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-500">Difference:</span>
+                              <span className="font-medium ml-1 text-red-600">+${notification.insights.difference}</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-500">Category:</span>
+                              <span className="font-medium ml-1 capitalize">{notification.insights.category}</span>
+                            </div>
+                          </div>
+                        )}
+
+                        {notification.category === 'savings' && (
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-500">Progress:</span>
+                              <span className="font-medium">{notification.insights.progressPercent}%</span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div 
+                                className="bg-green-500 h-2 rounded-full" 
+                                style={{ width: `${notification.insights.progressPercent}%` }}
+                              />
+                            </div>
+                            <div className="grid grid-cols-2 gap-2 text-xs">
+                              <div>
+                                <span className="text-gray-500">Saved:</span>
+                                <span className="font-medium ml-1">${notification.insights.savedAmount}</span>
+                              </div>
+                              <div>
+                                <span className="text-gray-500">Goal:</span>
+                                <span className="font-medium ml-1">${notification.insights.goalAmount}</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {notification.category === 'security' && notification.insights.flaggedTransactions && (
+                          <div className="space-y-2">
+                            <div className="text-sm">
+                              <span className="text-gray-500">Flagged Transactions:</span>
+                            </div>
+                            <div className="space-y-1">
+                              {notification.insights.flaggedTransactions.map((tx, idx) => (
+                                <div key={idx} className="flex justify-between text-xs bg-gray-50 p-2 rounded">
+                                  <span className="font-medium">{tx.merchant}</span>
+                                  <div className="text-right">
+                                    <div className="font-medium">${tx.amount}</div>
+                                    <div className="text-gray-500">{tx.date}</div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {notification.category === 'optimization' && notification.insights.recommendations && (
+                          <div className="space-y-2">
+                            <div className="text-sm">
+                              <span className="text-gray-500">Potential Savings:</span>
+                              <span className="font-medium ml-1 text-green-600">${notification.insights.potentialSavings}/month</span>
+                            </div>
+                            <div className="space-y-1">
+                              {notification.insights.recommendations.map((rec, idx) => (
+                                <div key={idx} className="text-xs bg-green-50 p-2 rounded border border-green-100">
+                                  {rec}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {notification.category === 'budget' && (
+                          <div className="grid grid-cols-2 gap-2 text-sm">
+                            <div>
+                              <span className="text-gray-500">Current:</span>
+                              <span className="font-medium ml-1">${notification.insights.currentSpent}</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-500">Last Month:</span>
+                              <span className="font-medium ml-1">${notification.insights.lastMonthSpent}</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-500">Remaining:</span>
+                              <span className="font-medium ml-1 text-green-600">${notification.insights.budgetRemaining}</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-500">Trend:</span>
+                              <span className={`font-medium ml-1 ${
+                                notification.insights.trend === 'decreasing' ? 'text-green-600' : 'text-red-600'
+                              }`}>
+                                {notification.insights.trend === 'decreasing' ? '↓' : '↑'} {notification.insights.trend}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Action Button */}
+                    {notification.actionable && (
+                      <div className="mt-3 pt-3 border-t border-gray-200">
+                        <button className={`text-xs px-3 py-1 rounded font-medium transition-colors ${
+                          notification.type === 'urgent' ? 'bg-red-100 text-red-700 hover:bg-red-200' :
+                          notification.type === 'warning' ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200' :
+                          notification.type === 'success' ? 'bg-green-100 text-green-700 hover:bg-green-200' :
+                          notification.type === 'info' ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' :
+                          'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}>
+                          Take Action
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Summary Section */}
+              <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+                <h3 className="font-semibold text-blue-900 mb-2">AI Summary</h3>
+                <p className="text-sm text-blue-800">
+                  Based on your spending patterns, I recommend focusing on optimizing subscription services and 
+                  monitoring dining expenses. Your overall financial health is strong with good savings progress.
+                </p>
+                <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                  <div className="bg-white bg-opacity-60 p-2 rounded">
+                    <span className="text-blue-600 font-medium">Risk Level:</span>
+                    <span className="ml-1 text-blue-800">Low-Medium</span>
+                  </div>
+                  <div className="bg-white bg-opacity-60 p-2 rounded">
+                    <span className="text-blue-600 font-medium">Score:</span>
+                    <span className="ml-1 text-blue-800">8.2/10</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -10,7 +10,7 @@ class ChatService:
     def __init__(self):
         # Initialize the Anthropic client
         self.client = anthropic.Anthropic()
-        self.model_name = "claude-3-7-sonnet-20250219"
+        self.model_name = "claude-sonnet-4-20250514"
         self.max_tokens = 4000
         self.thinking_budget_tokens = 2000
 

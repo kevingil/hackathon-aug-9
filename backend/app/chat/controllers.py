@@ -54,8 +54,8 @@ def get_financial_data():
                 "id": account.id,
                 "name": account.name,
                 "balance": account.balance,
-                "expenses": [{"id": e.id, "amount": e.amount, "category": e.category} for e in account.expenses],
-                "deposits": [{"id": d.id, "amount": d.amount, "category": d.category} for d in account.deposits]
+                "expenses": [{"id": e.id, "amount": e.amount, "category": e.category, "date": e.date, "description": e.description} for e in account.expenses],
+                "deposits": [{"id": d.id, "amount": d.amount, "category": d.category, "date": d.date, "description": d.description  } for d in account.deposits]
             }
             user_dict["accounts"].append(account_dict)
         

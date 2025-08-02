@@ -89,7 +89,7 @@ def analyze_user_account(user: User) -> str:
     """Analyze a user account."""
     user_formated = format_user_account_to_markdown(user)
     response = CLIENT.messages.create(
-        model="claude-3-7-sonnet-20250219",
+        model="claude-3-haiku-20240307",
         max_tokens=4000,
         thinking={
             "type": "enabled",

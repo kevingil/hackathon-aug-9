@@ -1,9 +1,9 @@
-import anthropic
+import anthropic # type: ignore
 import os
 import json
-from tools.example import weather, news
-from tools.definitions import tool_definitions
-from utils import print_thinking_response, count_tokens
+from tools.example import weather, news # type: ignore  
+from tools.definitions import tool_definitions # type: ignore
+from utils import print_thinking_response, count_tokens # type: ignore
 
 # Global variables for model and token budgets
 MODEL_NAME = "claude-3-7-sonnet-20250219"

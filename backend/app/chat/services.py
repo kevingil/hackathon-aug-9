@@ -274,6 +274,7 @@ class ChatService:
                 user_id=self.user_id,
                 arguments=tool_input,
             )
+            result = result.get("search_results", {}).get("data", {}).get("results", {})
             print(f"Composio Search results: {result}")
             print(f"Composio result type: {type(result)}")
 

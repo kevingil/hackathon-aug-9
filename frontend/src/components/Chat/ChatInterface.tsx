@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import ChatMessage from "../Chat/ChatMessage";
 import ChatInput from "../Chat/ChatInput";
 import FinancialDashboard from "../Financial/FinancialDashboard";
+import Logo from "../Logo";
 import { BASE_URL } from "../../api/const";
 
 export interface ChatBlock {
@@ -135,12 +136,12 @@ const ChatInterface = () => {
       <div className={`flex flex-col transition-all duration-300 min-w-[500px] w-[500px]`}>
         {/* Chat Header */}
         <div className="bg-white border-b border-gray-100 px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <span className="text-white text-sm font-bold">🚀</span>
+          <div className="flex flex-row items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-[#ffffff] to-[#eceaff] rounded-lg flex items-center justify-center p-1">
+                <Logo size="sm" className="" />
               </div>
-              <h2 className="text-xl font-semibold text-gray-900">Rocket Agent</h2>
+                <p className="text-xl p-0 m-0 font-semibold text-gray-900">Rocket Agent</p>
             </div>
             <div className="flex items-center space-x-3">
               {!showFinancialPanel && (
@@ -163,10 +164,10 @@ const ChatInterface = () => {
           <div className="max-w-4xl mx-auto px-8 py-6 space-y-6">
             {messages.length === 0 && (
               <div className="text-center py-16">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl mx-auto mb-6 flex items-center justify-center">
-                  <span className="text-white text-2xl">🚀</span>
+                <div className="w-32 h-32 mx-auto mb-6 flex items-center justify-center p-0">
+                  <Logo  className=" w-48 h-48 " />
                 </div>
-                <h2 className="text-2xl font-semibold text-gray-900 mb-3">Welcome to Your Financial Assistant</h2>
+                <h2 className="text-2xl font-semibold text-gray-900 mb-3">Your Personal Financial Assistant</h2>
                 <p className="text-gray-600 mb-2 max-w-md mx-auto">I can help you analyze your finances, plan budgets, and make smart financial decisions.</p>
                 <p className="text-sm text-gray-500 mb-8">Ask me about your spending patterns, savings goals, or investment advice!</p>
               </div>

@@ -28,108 +28,73 @@ tool_definitions = [
         },
     },
     {
-        "function": {
-            "name": "COMPOSIO_SEARCH_DUCK_DUCK_GO_SEARCH",
-            "description": "The duckduckgosearch class utilizes the composio duckduckgo search api to perform searches, focusing on web information and details. it leverages the duckduckgo search engine via the composio duckduckgo search api to retrieve relevant web data based on the provided query.",
-            "parameters": {
-                "properties": {
-                    "query": {
-                        "description": "The search query for the Composio DuckDuckGo Search API, specifying the search topic. Please provide a value of type string. This parameter is required.",
-                        "examples": ["Python programming"],
-                        "title": "Query",
-                        "type": "string",
-                    }
-                },
-                "required": ["query"],
-                "title": "DuckDuckGoSearchRequest",
-                "type": "object",
+        "name": "COMPOSIO_SEARCH_DUCK_DUCK_GO_SEARCH",
+        "description": "The duckduckgosearch class utilizes the composio duckduckgo search api to perform searches, focusing on web information and details. it leverages the duckduckgo search engine via the composio duckduckgo search api to retrieve relevant web data based on the provided query.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": "The search query for the Composio DuckDuckGo Search API, specifying the search topic.",
+                }
             },
-            "strict": None,
+            "required": ["query"],
         },
-        "type": "function",
     },
     {
-        "function": {
-            "name": "COMPOSIO_SEARCH_EVENT_SEARCH",
-            "description": "The eventsearch class enables scraping of google events search queries. it conducts an event search using the composio events search api, retrieving information on events such as concerts, festivals, and other activities based on the provided query.",
-            "parameters": {
-                "properties": {
-                    "query": {
-                        "description": "The search query for the Composio Events Search API, specifying the event topic. Please provide a value of type string. This parameter is required.",
-                        "examples": ["Music concerts in New York City"],
-                        "title": "Query",
-                        "type": "string",
-                    }
-                },
-                "required": ["query"],
-                "title": "EventSearchRequest",
-                "type": "object",
+        "name": "COMPOSIO_SEARCH_EVENT_SEARCH",
+        "description": "The eventsearch class enables scraping of google events search queries. it conducts an event search using the composio events search api, retrieving information on events such as concerts, festivals, and other activities based on the provided query.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": "The search query for the Composio Events Search API, specifying the event topic.",
+                }
             },
-            "strict": None,
+            "required": ["query"],
         },
-        "type": "function",
     },
     {
-        "function": {
-            "name": "COMPOSIO_SEARCH_FINANCE_SEARCH",
-            "description": "The financesearch class utilizes the composio finance search api to conduct financial searches, focusing on financial data and stock information. it leverages the google finance search engine via the composio finance search api to retrieve pertinent financial details based on the provided query.",
-            "parameters": {
-                "properties": {
-                    "query": {
-                        "description": "The search query for the Composio Finance Search API, specifying the financial topic or stock symbol. Please provide a value of type string. This parameter is required.",
-                        "examples": ["Apple Inc"],
-                        "title": "Query",
-                        "type": "string",
-                    }
-                },
-                "required": ["query"],
-                "title": "FinanceSearchRequest",
-                "type": "object",
+        "name": "COMPOSIO_SEARCH_FINANCE_SEARCH",
+        "description": "The financesearch class utilizes the composio finance search api to conduct financial searches, focusing on financial data and stock information. it leverages the google finance search engine via the composio finance search api to retrieve pertinent financial details based on the provided query.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": "The search query for the Composio Finance Search API, specifying the financial topic or stock symbol.",
+                }
             },
-            "strict": None,
+            "required": ["query"],
         },
-        "type": "function",
     },
     {
-        "function": {
-            "name": "COMPOSIO_SEARCH_NEWS_SEARCH",
-            "description": "The newssearch class performs a news-specific search using the composio news search api. this class extends the functionality of the base action class to specifically target news articles related to the given query. by utilizing the google news search engine through the composio news search api, it fetches the most relevant news articles based on the input query. the `newssearch` class is particularly useful for applications that need to retrieve and display the latest news articles about a specific topic. it leverages the powerful search capabilities of google's news search engine, ensuring that the returned results are current and relevant.",
-            "parameters": {
-                "properties": {
-                    "query": {
-                        "description": "The search query for the Composio News Search API, specifying the topic for news search. Please provide a value of type string. This parameter is required.",
-                        "examples": ["Coffee"],
-                        "title": "Query",
-                        "type": "string",
-                    }
-                },
-                "required": ["query"],
-                "title": "NewsSearchRequest",
-                "type": "object",
+        "name": "COMPOSIO_SEARCH_NEWS_SEARCH",
+        "description": "The newssearch class performs a news-specific search using the composio news search api. this class extends the functionality of the base action class to specifically target news articles related to the given query. by utilizing the google news search engine through the composio news search api, it fetches the most relevant news articles based on the input query. the `newssearch` class is particularly useful for applications that need to retrieve and display the latest news articles about a specific topic. it leverages the powerful search capabilities of google's news search engine, ensuring that the returned results are current and relevant.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": "The search query for the Composio News Search API, specifying the topic for news search.",
+                }
             },
-            "strict": None,
+            "required": ["query"],
         },
-        "type": "function",
     },
     {
-        "function": {
-            "name": "COMPOSIO_SEARCH_SEARCH",
-            "description": "Perform a google search using the composio google search api.",
-            "parameters": {
-                "properties": {
-                    "query": {
-                        "description": "The search query for the Composio Google Search API. Please provide a value of type string. This parameter is required.",
-                        "examples": ["Coffee"],
-                        "title": "Query",
-                        "type": "string",
-                    }
-                },
-                "required": ["query"],
-                "title": "SearchRequest",
-                "type": "object",
+        "name": "COMPOSIO_SEARCH_SEARCH",
+        "description": "Perform a google search using the composio google search api.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": "The search query for the Composio Google Search API.",
+                }
             },
-            "strict": None,
+            "required": ["query"],
         },
-        "type": "function",
     },
 ]

@@ -1,33 +1,5 @@
 tool_definitions = [
     {
-        "name": "weather",
-        "description": "Get current weather information for a location.",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "location": {
-                    "type": "string",
-                    "description": "The location to get weather for.",
-                }
-            },
-            "required": ["location"],
-        },
-    },
-    {
-        "name": "COMPOSIO_SEARCH_DUCK_DUCK_GO_SEARCH",
-        "description": "The duckduckgosearch class utilizes the composio duckduckgo search api to perform searches, focusing on web information and details. it leverages the duckduckgo search engine via the composio duckduckgo search api to retrieve relevant web data based on the provided query.",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "query": {
-                    "type": "string",
-                    "description": "The search query for the Composio DuckDuckGo Search API, specifying the search topic.",
-                }
-            },
-            "required": ["query"],
-        },
-    },
-    {
         "name": "COMPOSIO_SEARCH_EVENT_SEARCH",
         "description": "The eventsearch class enables scraping of google events search queries. it conducts an event search using the composio events search api, retrieving information on events such as concerts, festivals, and other activities based on the provided query.",
         "input_schema": {

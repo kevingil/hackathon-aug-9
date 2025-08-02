@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
+import { BASE_URL } from "./src/api/url";
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
@@ -8,7 +9,7 @@ export default defineConfig({
     host: true, // equivalent to 0.0.0.0
     port: 5173,
     proxy: {
-      "/api": "http://backend:8080",
+      "/api": BASE_URL,
     },
   },
 });

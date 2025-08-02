@@ -171,25 +171,35 @@ const FinancialDashboard = ({ onToggle, isCollapsed = false }: FinancialDashboar
   };
 
   const preparePieChartData = () => {
-    if (!summary) return [];
+    if (!summary || !summary.expensesByCategory.length) return [];
     
-    return [
-      {
-        name: 'Total Balance',
-        value: summary.totalBalance,
-        color: '#10B981', // Green
-      },
-      {
-        name: 'Income',
-        value: summary.totalIncome,
-        color: '#3B82F6', // Blue
-      },
-      {
-        name: 'Expenses',
-        value: summary.totalExpenses,
-        color: '#EF4444', // Red
-      },
+    // Define colors for different expense categories
+    const categoryColors: { [key: string]: string } = {
+      food: '#EF4444', // Red
+      rent: '#F97316', // Orange
+      entertainment: '#8B5CF6', // Purple
+      utilities: '#EAB308', // Yellow
+      transportation: '#6366F1', // Indigo
+      healthcare: '#EC4899', // Pink
+      shopping: '#06B6D4', // Cyan
+      personal_care: '#8B5CF6', // Violet
+      education: '#F59E0B', // Amber
+      savings: '#3B82F6', // Blue
+      investment: '#64748B', // Slate
+      transfer: '#737373', // Neutral
+    };
+    
+    // Generate colors for categories, cycling through a palette if needed
+    const defaultColors = [
+      '#EF4444', '#F97316', '#8B5CF6', '#EAB308', '#6366F1', 
+      '#EC4899', '#06B6D4', '#10B981', '#F59E0B', '#64748B'
     ];
+    
+    return summary.expensesByCategory.map((category, index) => ({
+      name: category.category.charAt(0).toUpperCase() + category.category.slice(1).replace('_', ' '),
+      value: category.amount,
+      color: categoryColors[category.category] || defaultColors[index % defaultColors.length],
+    }));
   };
 
   const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
@@ -399,7 +409,6 @@ const FinancialDashboard = ({ onToggle, isCollapsed = false }: FinancialDashboar
       <div className="p-4 space-y-4">
         {/* Financial Overview Pie Chart */}
         <div className="bg-gray-50 p-4 rounded-lg">
-          <h4 className="text-md font-semibold text-gray-800 mb-3 text-center">Financial Summary</h4>
           <div className="flex flex-col lg:flex-row items-center">
             <div className="w-full lg:w-1/2 h-64">
               <ResponsiveContainer width="100%" height="100%">
@@ -410,7 +419,7 @@ const FinancialDashboard = ({ onToggle, isCollapsed = false }: FinancialDashboar
                     cy="50%"
                     labelLine={false}
                     label={renderCustomLabel}
-                    outerRadius={80}
+                    outerRadius={120}
                     fill="#8884d8"
                     dataKey="value"
                   >
@@ -424,6 +433,7 @@ const FinancialDashboard = ({ onToggle, isCollapsed = false }: FinancialDashboar
             </div>
             <div className="w-full lg:w-1/2 lg:pl-6 mt-4 lg:mt-0">
               <div className="space-y-3">
+              <h4 className="text-md font-semibold text-gray-800 mb-3 text-left">Expenses by Category</h4>
                 {preparePieChartData().map((item, index) => (
                   <div key={index} className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
@@ -438,14 +448,16 @@ const FinancialDashboard = ({ onToggle, isCollapsed = false }: FinancialDashboar
                     </span>
                   </div>
                 ))}
-                <div className="border-t pt-3 mt-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-purple-700">Net Income</span>
-                    <span className={`text-sm font-bold ${summary && summary.netIncome >= 0 ? 'text-green-700' : 'text-red-700'}`}>
-                      {summary ? formatCurrency(summary.netIncome) : '--'}
-                    </span>
+                {preparePieChartData().length > 0 && (
+                  <div className="border-t pt-3 mt-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-red-700">Total Expenses</span>
+                      <span className="text-sm font-bold text-red-700">
+                        {summary ? formatCurrency(summary.totalExpenses) : '--'}
+                      </span>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
@@ -464,38 +476,6 @@ const FinancialDashboard = ({ onToggle, isCollapsed = false }: FinancialDashboar
           </div>
         </div>
 
-        {/* Categories */}
-        <div className="grid md:grid-cols-2 gap-4">
-          {/* Expenses by Category */}
-          <div>
-            <h4 className="text-md font-semibold text-gray-800 mb-3">Expenses by Category</h4>
-            <div className="space-y-2">
-              {summary?.expensesByCategory.map((category) => (
-                <div key={category.category} className="flex justify-between items-center">
-                  <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${getCategoryColor(category.category, 'expense')}`}>
-                    {category.category}
-                  </span>
-                  <span className="font-medium text-gray-900">{formatCurrency(category.amount)}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Income by Category */}
-          <div>
-            <h4 className="text-md font-semibold text-gray-800 mb-3">Income by Category</h4>
-            <div className="space-y-2">
-              {summary?.incomeByCategory.map((category) => (
-                <div key={category.category} className="flex justify-between items-center">
-                  <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${getCategoryColor(category.category, 'deposit')}`}>
-                    {category.category}
-                  </span>
-                  <span className="font-medium text-gray-900">{formatCurrency(category.amount)}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
 
         {/* Recent Transactions */}
         <div>

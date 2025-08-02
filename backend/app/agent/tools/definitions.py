@@ -97,6 +97,62 @@ tool_definitions = [
             "required": ["query"],
         },
     },
+    {
+        "name": "analyze_results",
+        "description": "Analyze tool results.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "results": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "The name of the tool.",
+                        },
+                        "result": {
+                            "type": "string",
+                            "description": "The result of the tool.",
+                        },
+                        "error": {
+                            "type": "boolean",
+                            "description": "Whether an error occurred.",
+                        },
+                    },
+                    "required": ["name", "result", "error"],
+                }
+            },
+            "required": ["results"],
+        },
+    },
+    {
+        "name": "analyze_user_account",
+        "description": "Analyze the users finances by going through their accounts.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "results": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "The name of the tool.",
+                        },
+                        "result": {
+                            "type": "string",
+                            "description": "The result of the tool.",
+                        },
+                        "error": {
+                            "type": "boolean",
+                            "description": "Whether an error occurred.",
+                        },
+                    },
+                    "required": ["name", "result", "error"],
+                }
+            },
+            "required": ["results"],
+        },
+    },
 ]
 
 

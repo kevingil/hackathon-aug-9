@@ -104,7 +104,12 @@ def analyze_results(results: ToolResults):
             "type": "enabled",
             "budget_tokens": 2000,
         },
-        messages=[{"role": "user", "content": results_formated}],
+        messages=[
+            {
+                "role": "user",
+                "content": f"Analyzse these tool results to see what relavent decisions can be made: {results_formated}",
+            }
+        ],
         response_model=ToolResultsAnalysis,
     )
     return response
@@ -120,7 +125,12 @@ def analyze_user_account(user: User) -> str:
             "type": "enabled",
             "budget_tokens": 2000,
         },
-        messages=[{"role": "user", "content": user_formated}],
+        messages=[
+            {
+                "role": "user",
+                "content": f"analyze my finances to help me make better decisions: {user_formated}",
+            }
+        ],
         response_model=UserAnalysis,
     )
     return response

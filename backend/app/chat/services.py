@@ -145,15 +145,15 @@ class ChatService:
             ]
             if tool_use_blocks:
                 print(f"*** TOOL EXECUTION ({len(tool_use_blocks)} tools) ***")
-                
+
                 # Collect all tool results
                 tool_results_content = []
-                
+
                 for tool_use_block in tool_use_blocks:
                     print(f"Tool name: {tool_use_block.name}")
                     print(f"Tool input: {tool_use_block.input}")
                     print(f"Tool ID: {tool_use_block.id}")
-                    
+
                     # Execute the tool
                     tool_result = self._execute_tool(
                         tool_use_block.name, tool_use_block.input
@@ -170,7 +170,7 @@ class ChatService:
                             "iteration": iteration,
                         }
                     )
-                    
+
                     # Collect tool result for conversation history
                     tool_results_content.append(
                         {
@@ -261,10 +261,10 @@ class ChatService:
 
         try:
             if tool_name == "analyze_user_account":
-                result = analyze_user_account(tool_input)
+                result = analyze_user_account(tool_input["user"])
                 return {"search_results": result}
             elif tool_name == "analyze_results":
-                result = analyze_results(tool_input)
+                result = analyze_results(tool_input["results"])
                 return {"search_results": result}
             print("Executing Composio tool for non-weather request")
             print(f"User ID: {self.user_id}")
@@ -278,7 +278,6 @@ class ChatService:
             print(f"Composio result type: {type(result)}")
 
             return {"search_results": result}
-
 
         except Exception as e:
             error_msg = f"Tool execution failed: {str(e)}"

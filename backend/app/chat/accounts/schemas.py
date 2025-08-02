@@ -1,5 +1,4 @@
-from pydantic import BaseModel, Field
-from typing import List
+from pydantic import BaseModel, Field # type: ignore
 
 
 class Expense(BaseModel):
@@ -18,16 +17,16 @@ class Deposit(BaseModel):
     category: str = Field(description="Deposit category")
 
 
-class Account:
+class Account(BaseModel):
     """Account model"""
 
     id: int = Field(description="Account ID")
     name: str = Field(description="Account name")
-    expenses: List[Expense] = Field(description="Account expenses")
-    deposits: List[Deposit] = Field(description="Account Deposits")
+    expenses: list[Expense] = Field(description="Account expenses")
+    deposits: list[Deposit] = Field(description="Account Deposits")
     balance: float = Field(description="Account balance")
 
 
 class User(BaseModel):
     id: int = Field(description="User ID")
-    accounts: List[Account] = Field(description="User accounts")
+    accounts: list[Account] = Field(description="User accounts")

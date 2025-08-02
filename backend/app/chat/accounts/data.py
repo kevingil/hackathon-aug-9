@@ -1,4 +1,4 @@
-from schemas import User, Expense, Account, Deposit
+from app.chat.accounts.schemas import User, Expense, Account, Deposit # type: ignore
 
 # Create some mock data
 mock_user_data = [

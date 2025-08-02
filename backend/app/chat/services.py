@@ -30,7 +30,7 @@ class ChatService:
         print(f"User message: {user_message}")
         print(f"Model: {self.model_name}")
         print(f"Max tokens: {self.max_tokens}")
-        
+
         try:
             # Initial request (same structure as agent.py)
             print("\n--- Making initial API call to Claude ---")
@@ -47,13 +47,15 @@ class ChatService:
 
             print(f"Initial response stop_reason: {response.stop_reason}")
             print(f"Initial response content blocks: {len(response.content)}")
-            
+
             # Process the response and handle tool calls
             conversation_history = [{"role": "user", "content": user_message}]
-            print(f"Starting conversation history with {len(conversation_history)} messages")
+            print(
+                f"Starting conversation history with {len(conversation_history)} messages"
+            )
 
             final_response = self._handle_response_chain(response, conversation_history)
-            
+
             print(f"\n=== CHAT SERVICE: Processing complete ===")
             print(f"Final response blocks: {len(final_response.get('blocks', []))}")
             print(f"Total iterations: {final_response.get('total_iterations', 0)}")
@@ -66,6 +68,7 @@ class ChatService:
             print(f"Error type: {type(e).__name__}")
             print(f"Error message: {str(e)}")
             import traceback
+
             print(f"Traceback: {traceback.format_exc()}")
             return {"success": False, "error": str(e)}
 
@@ -83,7 +86,7 @@ class ChatService:
             print(f"\n*** ITERATION {iteration} ***")
             print(f"Stop reason: {response.stop_reason}")
             print(f"Content blocks in response: {len(response.content)}")
-            
+
             # Log block types in this response
             block_types = [block.type for block in response.content]
             print(f"Block types: {block_types}")
@@ -176,7 +179,9 @@ class ChatService:
                         ],
                     }
                 )
-                print(f"Added tool result to conversation history. Total messages: {len(conversation_history)}")
+                print(
+                    f"Added tool result to conversation history. Total messages: {len(conversation_history)}"
+                )
 
                 # Continue the conversation
                 print(f"*** CONTINUING CONVERSATION AFTER TOOL USE ***")
@@ -231,7 +236,7 @@ class ChatService:
         print(f"\n--- Response chain handling complete ---")
         print(f"Total response blocks: {len(response_blocks)}")
         print(f"Total iterations: {iteration + 1}")
-        
+
         return {
             "blocks": response_blocks,
             "stop_reason": response.stop_reason,
@@ -243,10 +248,12 @@ class ChatService:
         print(f"\n+++ EXECUTING TOOL: {tool_name} +++")
         print(f"Tool input: {tool_input}")
         print(f"Tool input type: {type(tool_input)}")
-        
+
         try:
             if tool_name == "weather":
-                print(f"Executing weather tool with location: {tool_input.get('location', 'unknown')}")
+                print(
+                    f"Executing weather tool with location: {tool_input.get('location', 'unknown')}"
+                )
                 result = weather(tool_input["location"])
                 print(f"Weather tool result: {result}")
                 return result
@@ -255,9 +262,9 @@ class ChatService:
                 print(f"User ID: {self.user_id}")
                 composio = Composio()
                 result = composio.tools.execute(
-                    tool_name=tool_name,
+                    slug=tool_name,
                     user_id=self.user_id,
-                    arguments=input,
+                    arguments=tool_input,
                 )
                 print(f"Composio Search results: {result}")
                 print(f"Composio result type: {type(result)}")
@@ -268,12 +275,13 @@ class ChatService:
                 error_msg = f"Unknown tool: {tool_name}"
                 print(f"!!! TOOL ERROR: {error_msg}")
                 return {"error": error_msg}
-                
+
         except Exception as e:
             error_msg = f"Tool execution failed: {str(e)}"
             print(f"!!! TOOL EXECUTION EXCEPTION !!!")
             print(f"Error type: {type(e).__name__}")
             print(f"Error message: {str(e)}")
             import traceback
+
             print(f"Traceback: {traceback.format_exc()}")
             return {"error": error_msg}

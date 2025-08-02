@@ -1,6 +1,5 @@
 import anthropic  # type: ignore
-from app.chat.schemas import User
-from app.agent.tools.definitions import tool_definitions  # type: ignore
+from app.chat.accounts.schemas import User
 
 from pydantic import BaseModel, Field
 from typing import List
@@ -19,7 +18,7 @@ class ToolResults(BaseModel):
 class ToolResultsAnalysis(BaseModel):
     """"""
 
-    results = List[ToolResults] = Field(description="The analysis of the results")
+    results: List[ToolResults] = Field(description="The analysis of the results")
 
 
 class AccountAnalysis(BaseModel):

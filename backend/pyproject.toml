@@ -13,5 +13,7 @@ dependencies = [
     "psycopg2-binary==2.9.10",
     "anthropic==0.60.0",
     "flask_socketio==5.5.1",
-    "dotenv==0.9.9"
+    "dotenv==0.9.9",
+    "composio==0.8.5",
+    "composio-anthropic==0.8.5"
 ]

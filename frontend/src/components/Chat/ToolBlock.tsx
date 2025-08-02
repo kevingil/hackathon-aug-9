@@ -11,6 +11,8 @@ interface ToolBlockProps {
 const ToolBlock = ({ type, toolName, toolInput, toolResult, iteration }: ToolBlockProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
+  console.log('ToolBlock Iteration', iteration);
+  
   const getToolIcon = (name: string) => {
     switch (name) {
       case "weather":
@@ -30,9 +32,9 @@ const ToolBlock = ({ type, toolName, toolInput, toolResult, iteration }: ToolBlo
             <span className="text-xs font-medium text-blue-700 bg-blue-200 px-2 py-1 rounded">
               {getToolIcon(toolName)} {type === "use" ? "TOOL USE" : "TOOL RESULT"}: {toolName.toUpperCase()}
             </span>
-            {iteration && (
+            {/* {iteration && (
               <span className="text-xs text-gray-600">Iteration {iteration}</span>
-            )}
+            )} */}
           </div>
           <button
             onClick={() => setIsExpanded(!isExpanded)}

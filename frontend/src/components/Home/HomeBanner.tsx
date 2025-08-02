@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
-import { PROJECT_NAME } from "../../data/ProjectName";
-import { PROJECT_LOGO } from "../../data/ProjectLogo";
+import { PROJECT_NAME, PROJECT_LOGO } from "../../api/const";
 const HomeBanner = () => {
   const token = localStorage.getItem("token");
   return (

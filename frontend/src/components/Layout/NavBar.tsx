@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { PROJECT_NAME } from "../../data/ProjectName";
-import { PROJECT_LOGO } from "../../data/ProjectLogo";
-import { BASE_URL } from "../../api/url";
+import { PROJECT_NAME, PROJECT_LOGO } from "../../api/const";
+import { BASE_URL } from "../../api/const";
 
 const Navigation = () => {
   const navigate = useNavigate();

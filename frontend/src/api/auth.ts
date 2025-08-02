@@ -1,4 +1,4 @@
-import { BASE_URL } from "./url";
+import { BASE_URL } from "./const";
 
 export const isAuthenticated = () => {
   return !!localStorage.getItem("token"); // or sessionStorage or a context value

@@ -1,7 +1,7 @@
 import anthropic  # type: ignore
-import os
 import json
 from app.agent.tools.example import weather  # type: ignore
+from app.agent.tools.functions import analyze_results, format_tool_results_to_markdown  # type: ignore
 from app.agent.tools.definitions import tool_definitions  # type: ignore
 from composio import Composio  # type: ignore
 
@@ -26,7 +26,7 @@ class ChatService:
         Process a user message using the agent's multiple_tool_calls_with_thinking logic.
         Returns structured response data for the frontend.
         """
-        print(f"\n=== CHAT SERVICE: Processing new message ===")
+        print("\n=== CHAT SERVICE: Processing new message ===")
         print(f"User message: {user_message}")
         print(f"Model: {self.model_name}")
         print(f"Max tokens: {self.max_tokens}")
@@ -45,8 +45,8 @@ class ChatService:
                 messages=[{"role": "user", "content": user_message}],
             )
 
-            print(f"Initial response stop_reason: {response.stop_reason}")
-            print(f"Initial response content blocks: {len(response.content)}")
+            print("Initial response stop_reason: {response.stop_reason}")
+            print("Initial response content blocks: {len(response.content)}")
 
             # Process the response and handle tool calls
             conversation_history = [{"role": "user", "content": user_message}]
@@ -56,7 +56,7 @@ class ChatService:
 
             final_response = self._handle_response_chain(response, conversation_history)
 
-            print(f"\n=== CHAT SERVICE: Processing complete ===")
+            print("\n=== CHAT SERVICE: Processing complete ===")
             print(f"Final response blocks: {len(final_response.get('blocks', []))}")
             print(f"Total iterations: {final_response.get('total_iterations', 0)}")
             print(f"Stop reason: {final_response.get('stop_reason', 'unknown')}")
@@ -64,7 +64,7 @@ class ChatService:
             return {"success": True, "response": final_response}
 
         except Exception as e:
-            print(f"\n!!! CHAT SERVICE ERROR !!!")
+            print("\n!!! CHAT SERVICE ERROR !!!")
             print(f"Error type: {type(e).__name__}")
             print(f"Error message: {str(e)}")
             import traceback
@@ -77,7 +77,7 @@ class ChatService:
         Handle the full response chain including tool calls, following agent.py logic.
         Returns structured response data.
         """
-        print(f"\n--- Starting response chain handling ---")
+        print("\n--- Starting response chain handling ---")
         response_blocks = []
         iteration = 0
 
@@ -137,14 +137,14 @@ class ChatService:
             conversation_history.append(
                 {"role": "assistant", "content": assistant_blocks}
             )
-            print(f"Added assistant message to conversation history")
+            print("Added assistant message to conversation history")
 
             # Execute tool if there's a tool_use block
             tool_use_block = next(
                 (block for block in response.content if block.type == "tool_use"), None
             )
             if tool_use_block:
-                print(f"*** TOOL EXECUTION ***")
+                print("*** TOOL EXECUTION ***")
                 print(f"Tool name: {tool_use_block.name}")
                 print(f"Tool input: {tool_use_block.input}")
                 print(f"Tool ID: {tool_use_block.id}")
@@ -164,7 +164,7 @@ class ChatService:
                         "iteration": iteration,
                     }
                 )
-                print(f"Added tool result to response blocks")
+                print("Added tool result to response blocks")
 
                 # Add tool result to conversation
                 conversation_history.append(
@@ -184,7 +184,7 @@ class ChatService:
                 )
 
                 # Continue the conversation
-                print(f"*** CONTINUING CONVERSATION AFTER TOOL USE ***")
+                print("*** CONTINUING CONVERSATION AFTER TOOL USE ***")
                 response = self.client.messages.create(
                     model=self.model_name,
                     max_tokens=self.max_tokens,
@@ -196,11 +196,11 @@ class ChatService:
                     messages=conversation_history,
                 )
             else:
-                print(f"No tool_use block found, breaking loop")
+                print("No tool_use block found, breaking loop")
                 break
 
         # Handle final response (no more tool use)
-        print(f"\n*** FINAL RESPONSE PROCESSING ***")
+        print("\n*** FINAL RESPONSE PROCESSING ***")
         print(f"Final stop reason: {response.stop_reason}")
         if response.stop_reason != "tool_use":
             final_blocks = []
@@ -233,9 +233,9 @@ class ChatService:
             response_blocks.extend(final_blocks)
             print(f"Added {len(final_blocks)} final blocks to response")
 
-        print(f"\n--- Response chain handling complete ---")
-        print(f"Total response blocks: {len(response_blocks)}")
-        print(f"Total iterations: {iteration + 1}")
+        print("\n--- Response chain handling complete ---")
+        print("Total response blocks: {len(response_blocks)}")
+        print("Total iterations: {iteration + 1}")
 
         return {
             "blocks": response_blocks,
@@ -258,7 +258,7 @@ class ChatService:
                 print(f"Weather tool result: {result}")
                 return result
             elif tool_name != "weather":
-                print(f"Executing Composio tool for non-weather request")
+                print("Executing Composio tool for non-weather request")
                 print(f"User ID: {self.user_id}")
                 composio = Composio()
                 result = composio.tools.execute(
@@ -278,7 +278,7 @@ class ChatService:
 
         except Exception as e:
             error_msg = f"Tool execution failed: {str(e)}"
-            print(f"!!! TOOL EXECUTION EXCEPTION !!!")
+            print("!!! TOOL EXECUTION EXCEPTION !!!")
             print(f"Error type: {type(e).__name__}")
             print(f"Error message: {str(e)}")
             import traceback

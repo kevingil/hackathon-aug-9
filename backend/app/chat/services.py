@@ -1,6 +1,14 @@
 import anthropic  # type: ignore
 import json
-from app.agent.tools.functions import analyze_results, analyze_user_account  # type: ignore
+from app.agent.tools.example import weather  # type: ignore
+from app.agent.tools.functions import (  # type: ignore
+    analyze_results, 
+    analyze_user_account,
+    parse_composio_search_results,
+    parse_composio_finance_search_results,
+    parse_composio_news_search_results,
+    parse_composio_event_search_results
+)
 from app.agent.tools.definitions import tool_definitions  # type: ignore
 from composio import Composio  # type: ignore
 
@@ -273,11 +281,26 @@ class ChatService:
                 user_id=self.user_id,
                 arguments=tool_input,
             )
-            result = result.get("search_results", {}).get("data", {}).get("results", {})
-            print(f"Composio Search results: {result}")
+            print(f"Raw Composio result: {result}")
             print(f"Composio result type: {type(result)}")
 
-            return {"search_results": result}
+            # Parse results using appropriate parser based on tool name
+            if "finance" in tool_name.lower():
+                parsed_result = parse_composio_finance_search_results(result)
+                print("Used finance search parser")
+            elif "news" in tool_name.lower():
+                parsed_result = parse_composio_news_search_results(result)
+                print("Used news search parser")
+            elif "event" in tool_name.lower():
+                parsed_result = parse_composio_event_search_results(result)
+                print("Used event search parser")
+            else:
+                # Default to general search parser
+                parsed_result = parse_composio_search_results(result)
+                print("Used general search parser")
+
+            print(f"Parsed result: {parsed_result}")
+            return {"search_results": parsed_result}
 
         except Exception as e:
             error_msg = f"Tool execution failed: {str(e)}"

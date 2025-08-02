@@ -2,7 +2,7 @@ import anthropic  # type: ignore
 import os
 import json
 from app.agent.tools.example import weather  # type: ignore
-from app.agent.tools.definitions import tool_definitions # type: ignore
+from app.agent.tools.definitions import tool_definitions  # type: ignore
 from composio import Composio  # type: ignore
 
 
@@ -201,7 +201,7 @@ class ChatService:
             elif tool_name != "weather":
                 composio = Composio()
                 result = composio.tools.execute(
-                    "COMPOSIO_SEARCH_FINANCE_SEARCH",
+                    tool_name=tool_name,
                     user_id=self.user_id,
                     arguments=input,
                 )

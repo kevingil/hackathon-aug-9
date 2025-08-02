@@ -45,8 +45,8 @@ class ChatService:
                 messages=[{"role": "user", "content": user_message}],
             )
 
-            print("Initial response stop_reason: {response.stop_reason}")
-            print("Initial response content blocks: {len(response.content)}")
+            print(f"Initial response stop_reason: {response.stop_reason}")
+            print(f"Initial response content blocks: {len(response.content)}")
 
             # Process the response and handle tool calls
             conversation_history = [{"role": "user", "content": user_message}]
@@ -139,48 +139,58 @@ class ChatService:
             )
             print("Added assistant message to conversation history")
 
-            # Execute tool if there's a tool_use block
-            tool_use_block = next(
-                (block for block in response.content if block.type == "tool_use"), None
-            )
-            if tool_use_block:
-                print("*** TOOL EXECUTION ***")
-                print(f"Tool name: {tool_use_block.name}")
-                print(f"Tool input: {tool_use_block.input}")
-                print(f"Tool ID: {tool_use_block.id}")
-                # Execute the tool
-                tool_result = self._execute_tool(
-                    tool_use_block.name, tool_use_block.input
-                )
-                print(f"Tool execution result: {tool_result}")
+            # Execute ALL tool_use blocks if there are any
+            tool_use_blocks = [
+                block for block in response.content if block.type == "tool_use"
+            ]
+            if tool_use_blocks:
+                print(f"*** TOOL EXECUTION ({len(tool_use_blocks)} tools) ***")
+                
+                # Collect all tool results
+                tool_results_content = []
+                
+                for tool_use_block in tool_use_blocks:
+                    print(f"Tool name: {tool_use_block.name}")
+                    print(f"Tool input: {tool_use_block.input}")
+                    print(f"Tool ID: {tool_use_block.id}")
+                    
+                    # Execute the tool
+                    tool_result = self._execute_tool(
+                        tool_use_block.name, tool_use_block.input
+                    )
+                    print(f"Tool execution result: {tool_result}")
 
-                # Add tool result to response blocks
-                response_blocks.append(
-                    {
-                        "type": "tool_result",
-                        "tool_name": tool_use_block.name,
-                        "tool_input": tool_use_block.input,
-                        "tool_result": tool_result,
-                        "iteration": iteration,
-                    }
-                )
-                print("Added tool result to response blocks")
+                    # Add tool result to response blocks
+                    response_blocks.append(
+                        {
+                            "type": "tool_result",
+                            "tool_name": tool_use_block.name,
+                            "tool_input": tool_use_block.input,
+                            "tool_result": tool_result,
+                            "iteration": iteration,
+                        }
+                    )
+                    
+                    # Collect tool result for conversation history
+                    tool_results_content.append(
+                        {
+                            "type": "tool_result",
+                            "tool_use_id": tool_use_block.id,
+                            "content": json.dumps(tool_result),
+                        }
+                    )
 
-                # Add tool result to conversation
+                print("Added all tool results to response blocks")
+
+                # Add ALL tool results to conversation in a single message
                 conversation_history.append(
                     {
                         "role": "user",
-                        "content": [
-                            {
-                                "type": "tool_result",
-                                "tool_use_id": tool_use_block.id,
-                                "content": json.dumps(tool_result),
-                            }
-                        ],
+                        "content": tool_results_content,
                     }
                 )
                 print(
-                    f"Added tool result to conversation history. Total messages: {len(conversation_history)}"
+                    f"Added {len(tool_results_content)} tool results to conversation history. Total messages: {len(conversation_history)}"
                 )
 
                 # Continue the conversation
@@ -234,8 +244,8 @@ class ChatService:
             print(f"Added {len(final_blocks)} final blocks to response")
 
         print("\n--- Response chain handling complete ---")
-        print("Total response blocks: {len(response_blocks)}")
-        print("Total iterations: {iteration + 1}")
+        print(f"Total response blocks: {len(response_blocks)}")
+        print(f"Total iterations: {iteration + 1}")
 
         return {
             "blocks": response_blocks,
@@ -250,37 +260,25 @@ class ChatService:
         print(f"Tool input type: {type(tool_input)}")
 
         try:
-            if tool_name == "weather":
-                print(
-                    f"Executing weather tool with location: {tool_input.get('location', 'unknown')}"
-                )
-                result = weather(tool_input["location"])
-                print(f"Weather tool result: {result}")
-                return result
-            elif tool_name != "weather":
-                if tool_name == "analyze_user_account":
-                    result = analyze_user_account(tool_input["user"])
-                    return {"search_results": result}
-                elif tool_name == "analyze_results":
-                    result = analyze_results(tool_input["results"])
-                    return {"search_results": result}
-                print("Executing Composio tool for non-weather request")
-                print(f"User ID: {self.user_id}")
-                composio = Composio()
-                result = composio.tools.execute(
-                    slug=tool_name,
-                    user_id=self.user_id,
-                    arguments=tool_input,
-                )
-                print(f"Composio Search results: {result}")
-                print(f"Composio result type: {type(result)}")
-
+            if tool_name == "analyze_user_account":
+                result = analyze_user_account(tool_input)
                 return {"search_results": result}
+            elif tool_name == "analyze_results":
+                result = analyze_results(tool_input)
+                return {"search_results": result}
+            print("Executing Composio tool for non-weather request")
+            print(f"User ID: {self.user_id}")
+            composio = Composio()
+            result = composio.tools.execute(
+                slug=tool_name,
+                user_id=self.user_id,
+                arguments=tool_input,
+            )
+            print(f"Composio Search results: {result}")
+            print(f"Composio result type: {type(result)}")
 
-            else:
-                error_msg = f"Unknown tool: {tool_name}"
-                print(f"!!! TOOL ERROR: {error_msg}")
-                return {"error": error_msg}
+            return {"search_results": result}
+
 
         except Exception as e:
             error_msg = f"Tool execution failed: {str(e)}"

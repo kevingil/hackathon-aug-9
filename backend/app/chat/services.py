@@ -259,10 +259,10 @@ class ChatService:
                 return result
             elif tool_name != "weather":
                 if tool_name == "analyze_user_account":
-                    result = analyze_user_account(tool_input)
+                    result = analyze_user_account(tool_input["user"])
                     return {"search_results": result}
                 elif tool_name == "analyze_results":
-                    result = analyze_results(tool_input)
+                    result = analyze_results(tool_input["results"])
                     return {"search_results": result}
                 print("Executing Composio tool for non-weather request")
                 print(f"User ID: {self.user_id}")

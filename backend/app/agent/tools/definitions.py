@@ -70,3 +70,16 @@ tool_definitions = [
         },
     },
 ]
+
+
+
+# mock user data 
+# all acvounts
+# expenses
+# expenses by category
+# good spender
+# bad spender
+
+
+# analyse accounts
+# 

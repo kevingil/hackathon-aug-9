@@ -2,6 +2,16 @@ import { useState, useEffect } from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import type { FinancialUser, FinancialSummary, CategorySummary } from "../../types/Financial";
 
+interface Transaction {
+  id: number;
+  amount: number;
+  category: string;
+  date?: string;
+  description?: string;
+  type: 'expense' | 'deposit';
+  accountName: string;
+}
+
 interface FinancialDashboardProps {
   onToggle?: () => void;
   isCollapsed?: boolean;
@@ -11,6 +21,13 @@ const FinancialDashboard = ({ onToggle, isCollapsed = false }: FinancialDashboar
   const [financialData, setFinancialData] = useState<FinancialUser | null>(null);
   const [summary, setSummary] = useState<FinancialSummary | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  // Transactions pagination and filtering state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [transactionFilter, setTransactionFilter] = useState<'all' | 'expense' | 'deposit'>('all');
+  const [sortBy, setSortBy] = useState<'date' | 'amount'>('date');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const transactionsPerPage = 10;
 
   useEffect(() => {
     const calculateSummary = (data: FinancialUser): FinancialSummary => {
@@ -202,17 +219,119 @@ const FinancialDashboard = ({ onToggle, isCollapsed = false }: FinancialDashboar
       rent: 'bg-orange-100 text-orange-800',
       entertainment: 'bg-purple-100 text-purple-800',
       savings: 'bg-blue-100 text-blue-800',
+      utilities: 'bg-yellow-100 text-yellow-800',
+      transportation: 'bg-indigo-100 text-indigo-800',
+      healthcare: 'bg-pink-100 text-pink-800',
+      shopping: 'bg-cyan-100 text-cyan-800',
+      personal_care: 'bg-violet-100 text-violet-800',
+      education: 'bg-amber-100 text-amber-800',
+      investment: 'bg-slate-100 text-slate-800',
+      transfer: 'bg-neutral-100 text-neutral-800',
       default: 'bg-gray-100 text-gray-800',
     };
 
     const incomeColors = {
       work: 'bg-green-100 text-green-800',
+      salary: 'bg-green-100 text-green-800',
       gift: 'bg-pink-100 text-pink-800',
+      freelance: 'bg-blue-100 text-blue-800',
+      bonus: 'bg-emerald-100 text-emerald-800',
+      side_hustle: 'bg-teal-100 text-teal-800',
+      financial_aid: 'bg-orange-100 text-orange-800',
+      family: 'bg-rose-100 text-rose-800',
+      tutoring: 'bg-purple-100 text-purple-800',
+      refund: 'bg-lime-100 text-lime-800',
+      cashback: 'bg-sky-100 text-sky-800',
+      investment: 'bg-slate-100 text-slate-800',
+      transfer: 'bg-neutral-100 text-neutral-800',
       default: 'bg-emerald-100 text-emerald-800',
     };
 
     const colors = type === 'expense' ? expenseColors : incomeColors;
     return colors[category as keyof typeof colors] || colors.default;
+  };
+
+  // Process and combine all transactions
+  const getAllTransactions = (): Transaction[] => {
+    if (!financialData) return [];
+
+    const transactions: Transaction[] = [];
+
+    financialData.accounts.forEach(account => {
+      // Add expenses
+      account.expenses.forEach(expense => {
+        transactions.push({
+          ...expense,
+          type: 'expense',
+          accountName: account.name,
+        });
+      });
+
+      // Add deposits
+      account.deposits.forEach(deposit => {
+        transactions.push({
+          ...deposit,
+          type: 'deposit',
+          accountName: account.name,
+        });
+      });
+    });
+
+    return transactions;
+  };
+
+  // Filter and sort transactions
+  const getFilteredAndSortedTransactions = () => {
+    let transactions = getAllTransactions();
+
+    // Apply filter
+    if (transactionFilter !== 'all') {
+      transactions = transactions.filter(t => t.type === transactionFilter);
+    }
+
+    // Apply sorting
+    transactions.sort((a, b) => {
+      let comparison = 0;
+
+      if (sortBy === 'date') {
+        const dateA = a.date ? new Date(a.date).getTime() : 0;
+        const dateB = b.date ? new Date(b.date).getTime() : 0;
+        comparison = dateA - dateB;
+      } else if (sortBy === 'amount') {
+        comparison = a.amount - b.amount;
+      }
+
+      return sortOrder === 'asc' ? comparison : -comparison;
+    });
+
+    return transactions;
+  };
+
+  // Paginate transactions
+  const getPaginatedTransactions = () => {
+    const filteredTransactions = getFilteredAndSortedTransactions();
+    const startIndex = (currentPage - 1) * transactionsPerPage;
+    const endIndex = startIndex + transactionsPerPage;
+    
+    return {
+      transactions: filteredTransactions.slice(startIndex, endIndex),
+      totalTransactions: filteredTransactions.length,
+      totalPages: Math.ceil(filteredTransactions.length / transactionsPerPage),
+    };
+  };
+
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return 'No date';
+    
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      });
+    } catch {
+      return 'Invalid date';
+    }
   };
 
   if (loading) {
@@ -375,6 +494,207 @@ const FinancialDashboard = ({ onToggle, isCollapsed = false }: FinancialDashboar
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+
+        {/* Recent Transactions */}
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="text-md font-semibold text-gray-800">Recent Transactions</h4>
+            <div className="flex items-center space-x-2">
+              {/* Filter buttons */}
+              <div className="flex rounded-lg border border-gray-200 overflow-hidden">
+                <button
+                  onClick={() => {
+                    setTransactionFilter('all');
+                    setCurrentPage(1);
+                  }}
+                  className={`px-3 py-1 text-xs font-medium transition-colors ${
+                    transactionFilter === 'all'
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-white text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  All
+                </button>
+                <button
+                  onClick={() => {
+                    setTransactionFilter('deposit');
+                    setCurrentPage(1);
+                  }}
+                  className={`px-3 py-1 text-xs font-medium transition-colors border-l border-gray-200 ${
+                    transactionFilter === 'deposit'
+                      ? 'bg-green-500 text-white'
+                      : 'bg-white text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  Income
+                </button>
+                <button
+                  onClick={() => {
+                    setTransactionFilter('expense');
+                    setCurrentPage(1);
+                  }}
+                  className={`px-3 py-1 text-xs font-medium transition-colors border-l border-gray-200 ${
+                    transactionFilter === 'expense'
+                      ? 'bg-red-500 text-white'
+                      : 'bg-white text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  Expenses
+                </button>
+              </div>
+
+              {/* Sort controls */}
+              <select
+                value={`${sortBy}-${sortOrder}`}
+                onChange={(e) => {
+                  const [newSortBy, newSortOrder] = e.target.value.split('-') as [typeof sortBy, typeof sortOrder];
+                  setSortBy(newSortBy);
+                  setSortOrder(newSortOrder);
+                  setCurrentPage(1);
+                }}
+                className="text-xs border border-gray-200 rounded px-2 py-1 bg-white text-gray-700"
+              >
+                <option value="date-desc">Date (Newest)</option>
+                <option value="date-asc">Date (Oldest)</option>
+                <option value="amount-desc">Amount (High to Low)</option>
+                <option value="amount-asc">Amount (Low to High)</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Transactions list */}
+          <div className="bg-gray-50 rounded-lg">
+            {(() => {
+              const { transactions, totalTransactions, totalPages } = getPaginatedTransactions();
+              
+              if (transactions.length === 0) {
+                return (
+                  <div className="p-8 text-center text-gray-500">
+                    <div className="text-lg mb-2">📊</div>
+                    <p>No transactions found</p>
+                    {transactionFilter !== 'all' && (
+                      <button
+                        onClick={() => {
+                          setTransactionFilter('all');
+                          setCurrentPage(1);
+                        }}
+                        className="text-blue-600 hover:text-blue-800 text-sm mt-2"
+                      >
+                        Show all transactions
+                      </button>
+                    )}
+                  </div>
+                );
+              }
+
+              return (
+                <>
+                  <div className="divide-y divide-gray-200">
+                    {transactions.map((transaction, index) => (
+                      <div key={`${transaction.type}-${transaction.id}-${index}`} className="p-4 hover:bg-white transition-colors">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-3 mb-1">
+                              <div className={`flex items-center justify-center w-8 h-8 rounded-full ${
+                                transaction.type === 'expense' 
+                                  ? 'bg-red-100 text-red-600' 
+                                  : 'bg-green-100 text-green-600'
+                              }`}>
+                                {transaction.type === 'expense' ? '↗' : '↙'}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center space-x-2">
+                                  <h5 className="text-sm font-medium text-gray-900 truncate">
+                                    {transaction.description || `${transaction.type === 'expense' ? 'Expense' : 'Income'} #${transaction.id}`}
+                                  </h5>
+                                  <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${getCategoryColor(transaction.category, transaction.type)}`}>
+                                    {transaction.category}
+                                  </span>
+                                </div>
+                                <div className="flex items-center space-x-2 text-xs text-gray-500 mt-1">
+                                  <span>{transaction.accountName}</span>
+                                  <span>•</span>
+                                  <span>{formatDate(transaction.date)}</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className={`text-sm font-bold ${
+                              transaction.type === 'expense' 
+                                ? 'text-red-600' 
+                                : 'text-green-600'
+                            }`}>
+                              {transaction.type === 'expense' ? '-' : '+'}
+                              {formatCurrency(transaction.amount)}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Pagination */}
+                  {totalPages > 1 && (
+                    <div className="p-4 border-t border-gray-200 bg-white rounded-b-lg">
+                      <div className="flex items-center justify-between">
+                        <div className="text-sm text-gray-700">
+                          Showing {((currentPage - 1) * transactionsPerPage) + 1} to {Math.min(currentPage * transactionsPerPage, totalTransactions)} of {totalTransactions} transactions
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                            disabled={currentPage === 1}
+                            className="px-3 py-1 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            Previous
+                          </button>
+                          
+                          <div className="flex items-center space-x-1">
+                            {Array.from({ length: Math.min(5, totalPages) }, (_, index) => {
+                              let pageNumber;
+                              if (totalPages <= 5) {
+                                pageNumber = index + 1;
+                              } else if (currentPage <= 3) {
+                                pageNumber = index + 1;
+                              } else if (currentPage >= totalPages - 2) {
+                                pageNumber = totalPages - 4 + index;
+                              } else {
+                                pageNumber = currentPage - 2 + index;
+                              }
+
+                              return (
+                                <button
+                                  key={pageNumber}
+                                  onClick={() => setCurrentPage(pageNumber)}
+                                  className={`px-3 py-1 text-sm font-medium rounded-md ${
+                                    currentPage === pageNumber
+                                      ? 'bg-blue-500 text-white'
+                                      : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-50'
+                                  }`}
+                                >
+                                  {pageNumber}
+                                </button>
+                              );
+                            })}
+                          </div>
+
+                          <button
+                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                            disabled={currentPage === totalPages}
+                            className="px-3 py-1 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            Next
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </>
+              );
+            })()}
           </div>
         </div>
       </div>

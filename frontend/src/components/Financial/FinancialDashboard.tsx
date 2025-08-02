@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
 import type { FinancialUser, FinancialSummary, CategorySummary } from "../../types/Financial";
 
 interface Transaction {
@@ -21,6 +21,9 @@ const FinancialDashboard = ({ onToggle, isCollapsed = false }: FinancialDashboar
   const [financialData, setFinancialData] = useState<FinancialUser | null>(null);
   const [summary, setSummary] = useState<FinancialSummary | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  // Chart tab state
+  const [activeTab, setActiveTab] = useState<'expenses-vs-income' | 'expenses-by-category'>('expenses-vs-income');
   
   // Transactions pagination and filtering state
   const [currentPage, setCurrentPage] = useState(1);
@@ -200,6 +203,42 @@ const FinancialDashboard = ({ onToggle, isCollapsed = false }: FinancialDashboar
       value: category.amount,
       color: categoryColors[category.category] || defaultColors[index % defaultColors.length],
     }));
+  };
+
+  const prepareMonthlyData = () => {
+    if (!financialData) return [];
+
+    const allTransactions = getAllTransactions();
+    const monthlyData: { [key: string]: { expenses: number; income: number } } = {};
+
+    allTransactions.forEach(transaction => {
+      // If no date, use current month as fallback
+      const date = transaction.date ? new Date(transaction.date) : new Date();
+      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      
+      if (!monthlyData[monthKey]) {
+        monthlyData[monthKey] = { expenses: 0, income: 0 };
+      }
+
+      if (transaction.type === 'expense') {
+        monthlyData[monthKey].expenses += transaction.amount;
+      } else {
+        monthlyData[monthKey].income += transaction.amount;
+      }
+    });
+
+    // Convert to array and sort by month
+    return Object.entries(monthlyData)
+      .map(([month, data]) => ({
+        month: new Date(month + '-01').toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+        expenses: data.expenses,
+        income: data.income,
+      }))
+      .sort((a, b) => {
+        const dateA = new Date(a.month + ' 01');
+        const dateB = new Date(b.month + ' 01');
+        return dateA.getTime() - dateB.getTime();
+      });
   };
 
   const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
@@ -407,60 +446,113 @@ const FinancialDashboard = ({ onToggle, isCollapsed = false }: FinancialDashboar
       </div>
 
       <div className="p-4 space-y-4">
-        {/* Financial Overview Pie Chart */}
+        {/* Charts Section with Tabs */}
         <div className="bg-gray-50 p-4 rounded-lg">
-          <div className="flex flex-col lg:flex-row items-center">
-            <div className="w-full lg:w-1/2 h-64">
+          {/* Tabs Navigation */}
+          <div className="flex space-x-1 mb-4 bg-white rounded-lg p-1">
+            <button
+              onClick={() => setActiveTab('expenses-vs-income')}
+              className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors ${
+                activeTab === 'expenses-vs-income'
+                  ? 'bg-blue-500 text-white'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Expenses vs Income
+            </button>
+            <button
+              onClick={() => setActiveTab('expenses-by-category')}
+              className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors ${
+                activeTab === 'expenses-by-category'
+                  ? 'bg-blue-500 text-white'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Expenses by Category
+            </button>
+          </div>
+
+          {/* Tab Content */}
+          {activeTab === 'expenses-vs-income' && (
+            <div className="w-full h-80">
+              <h4 className="text-md font-semibold text-gray-800 mb-4">Monthly Expenses vs Income</h4>
               <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={preparePieChartData()}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={renderCustomLabel}
-                    outerRadius={120}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {preparePieChartData().map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
+                <BarChart
+                  data={prepareMonthlyData()}
+                  margin={{
+                    top: 20,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                  }}
+                  maxBarSize={60}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis tickFormatter={(value) => `$${value}`} />
                   <Tooltip formatter={(value) => formatCurrency(value as number)} />
-                </PieChart>
+                  <Legend />
+                  <Bar dataKey="income" stackId="a" fill="#6455e9" name="Income" />
+                  <Bar dataKey="expenses" stackId="a" fill="#cc62f6" name="Expenses" />
+                </BarChart>
               </ResponsiveContainer>
             </div>
-            <div className="w-full lg:w-1/2 lg:pl-6 mt-4 lg:mt-0">
-              <div className="space-y-3">
-              <h4 className="text-md font-semibold text-gray-800 mb-3 text-left">Expenses by Category</h4>
-                {preparePieChartData().map((item, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <div 
-                        className="w-3 h-3 rounded-full" 
-                        style={{ backgroundColor: item.color }}
-                      ></div>
-                      <span className="text-sm font-medium text-gray-700">{item.name}</span>
-                    </div>
-                    <span className="text-sm font-bold text-gray-900">
-                      {formatCurrency(item.value)}
-                    </span>
-                  </div>
-                ))}
-                {preparePieChartData().length > 0 && (
-                  <div className="border-t pt-3 mt-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-red-700">Total Expenses</span>
-                      <span className="text-sm font-bold text-red-700">
-                        {summary ? formatCurrency(summary.totalExpenses) : '--'}
+          )}
+
+          {activeTab === 'expenses-by-category' && (
+            <div className="flex flex-col lg:flex-row items-center">
+              <div className="w-full lg:w-1/2 h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={preparePieChartData()}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={renderCustomLabel}
+                      outerRadius={120}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {preparePieChartData().map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value) => formatCurrency(value as number)} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="w-full lg:w-1/2 lg:pl-6 mt-4 lg:mt-0">
+                <div className="space-y-3">
+                  <h4 className="text-md font-semibold text-gray-800 mb-3 text-left">Expenses by Category</h4>
+                  {preparePieChartData().map((item, index) => (
+                    <div key={index} className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <div 
+                          className="w-3 h-3 rounded-full" 
+                          style={{ backgroundColor: item.color }}
+                        ></div>
+                        <span className="text-sm font-medium text-gray-700">{item.name}</span>
+                      </div>
+                      <span className="text-sm font-bold text-gray-900">
+                        {formatCurrency(item.value)}
                       </span>
                     </div>
-                  </div>
-                )}
+                  ))}
+                  {preparePieChartData().length > 0 && (
+                    <div className="border-t pt-3 mt-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-red-700">Total Expenses</span>
+                        <span className="text-sm font-bold text-red-700">
+                          {summary ? formatCurrency(summary.totalExpenses) : '--'}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Accounts */}

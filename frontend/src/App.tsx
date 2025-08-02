@@ -15,7 +15,7 @@ function App() {
       <main className="flex-grow">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/content" element={<ChatInterface />} />
+          <Route path="/chat" element={<ChatInterface />} />
           <Route path="/login" element={<AuthPage />} />
           <Route element={<PrivateRoute />}>
             <Route path="/profile/:userId" element={<ProfilePage />} />

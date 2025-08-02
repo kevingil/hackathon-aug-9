@@ -80,29 +80,16 @@ const Navigation = () => {
 
         {/* Desktop nav */}
         <div className="hidden md:flex md:items-center space-x-6 font-semibold text-lg">
-          {!token ? (
-            <Link
-              to="/login"
-              className={`no-underline ${
-                location.pathname === "/login"
-                  ? "text-blue-600"
-                  : "text-gray-700 hover:text-blue-600"
-              }`}
-            >
-              Content
-            </Link>
-          ) : (
-            <Link
-              to="/orders"
-              className={`no-underline${
-                location.pathname === "/orders"
-                  ? "text-blue-600 no-underline"
-                  : "text-gray-700 hover:text-blue-600 no-underline"
-              }`}
-            >
-              Content
-            </Link>
-          )}
+          <Link
+            to="/content"
+            className={`no-underline ${
+              location.pathname === "/content"
+                ? "text-blue-600"
+                : "text-gray-700 hover:text-blue-600"
+            }`}
+          >
+            AI Chat
+          </Link>
 
           {!token ? (
             <Link
@@ -135,16 +122,29 @@ const Navigation = () => {
       {isOpen && (
         <div className="md:hidden px-4 pb-4 space-y-2 font-semibold text-lg">
           <Link
-            to="/orders"
+            to="/content"
             onClick={() => setIsOpen(false)}
             className={`block ${
-              location.pathname === "/orders"
+              location.pathname === "/content"
                 ? "text-blue-600"
                 : "text-gray-700 hover:text-blue-600"
             }`}
           >
-            Orders
+            AI Chat
           </Link>
+          {!token && (
+            <Link
+              to="/login"
+              onClick={() => setIsOpen(false)}
+              className={`block ${
+                location.pathname === "/login"
+                  ? "text-blue-600"
+                  : "text-gray-700 hover:text-blue-600"
+              }`}
+            >
+              Log In
+            </Link>
+          )}
         </div>
       )}
     </nav>

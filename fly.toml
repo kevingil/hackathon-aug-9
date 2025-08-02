@@ -1,22 +1,22 @@
-# fly.toml app configuration file generated for agent-db-small-sky-8990 on 2025-07-26T11:50:32-07:00
+# fly.toml app configuration file generated for agent-db-small-090225 on 2025-08-02T10:34:51-07:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'agent-db-small-sky-8990'
+app = 'agent-db-small-090225'
 primary_region = 'sjc'
 
 [build]
   dockerfile = 'pg.Dockerfile'
 
 [[services]]
-  internal_port = 5432
   protocol = 'tcp'
-  
+  internal_port = 5432
+
   [[services.ports]]
     port = 5432
 
 [[vm]]
-  memory = '1gb'
+  memory = '512mb'
   cpu_kind = 'shared'
   cpus = 1

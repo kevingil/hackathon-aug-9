@@ -14,7 +14,7 @@ const Navigation = () => {
     localStorage.removeItem("token");
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:5000/auth/logout", {
+      const res = await fetch("http://localhost:8080/auth/logout", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

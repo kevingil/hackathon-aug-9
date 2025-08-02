@@ -1,8 +1,8 @@
-from flask import Flask
-from app.config import Config
-from app.extensions import db, bcrypt, jwt, migrate, socketio, blacklist
-from app.routes import register_routes
-from flask_cors import CORS
+from flask import Flask  # type: ignore
+from app.config import Config  # type: ignore
+from app.extensions import db, bcrypt, jwt, migrate, socketio, blacklist  # type: ignore
+from app.routes import register_routes  # type: ignore
+from flask_cors import CORS  # type: ignore
 
 
 @jwt.token_in_blocklist_loader
@@ -27,7 +27,7 @@ def create_app():
     )
 
     with app.app_context():
-        from app.user import models as user_models
+        from app.user import models as user_models  # type: ignore
 
     register_routes(app)
     return app

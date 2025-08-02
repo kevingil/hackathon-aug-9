@@ -1,20 +1,26 @@
 from pydantic import BaseModel, Field # type: ignore
+from datetime import datetime
+from typing import Optional
 
 
 class Expense(BaseModel):
-    """Expsense model"""
+    """Expense model"""
 
     id: int = Field(description="Expense ID")
     amount: float = Field(description="Expense amount")
     category: str = Field(description="Expense category")
+    date: Optional[str] = Field(description="Transaction date", default=None)
+    description: Optional[str] = Field(description="Transaction description", default=None)
 
 
 class Deposit(BaseModel):
-    """Expsense model"""
+    """Deposit model"""
 
-    id: int = Field(description="Deposite ID")
+    id: int = Field(description="Deposit ID")
     amount: float = Field(description="Deposit amount")
     category: str = Field(description="Deposit category")
+    date: Optional[str] = Field(description="Transaction date", default=None)
+    description: Optional[str] = Field(description="Transaction description", default=None)
 
 
 class Account(BaseModel):

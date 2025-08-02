@@ -2,12 +2,16 @@ export interface Expense {
   id: number;
   amount: number;
   category: string;
+  date?: string;
+  description?: string;
 }
 
 export interface Deposit {
   id: number;
   amount: number;
   category: string;
+  date?: string;
+  description?: string;
 }
 
 export interface Account {

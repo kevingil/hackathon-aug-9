@@ -2,7 +2,7 @@ import anthropic  # type: ignore
 import os
 import json
 from app.agent.tools.example import weather  # type: ignore
-from app.agent.tools.definitions import tool_definitions
+from app.agent.tools.definitions import tool_definitions # type: ignore
 from composio import Composio  # type: ignore
 
 

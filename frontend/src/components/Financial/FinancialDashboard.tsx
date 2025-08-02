@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import type { FinancialUser, FinancialSummary, CategorySummary } from "../../types/Financial";
 
 interface FinancialDashboardProps {
@@ -12,10 +13,29 @@ const FinancialDashboard = ({ onToggle, isCollapsed = false }: FinancialDashboar
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchFinancialData();
-  }, []);
+    const calculateSummary = (data: FinancialUser): FinancialSummary => {
+      const totalBalance = data.accounts.reduce((sum, account) => sum + account.balance, 0);
+      
+      const allExpenses = data.accounts.flatMap(account => account.expenses);
+      const allDeposits = data.accounts.flatMap(account => account.deposits);
+      
+      const totalExpenses = allExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+      const totalIncome = allDeposits.reduce((sum, deposit) => sum + deposit.amount, 0);
+      
+      const expensesByCategory = groupByCategory(allExpenses, 'expense');
+      const incomeByCategory = groupByCategory(allDeposits, 'deposit');
+      
+      return {
+        totalBalance,
+        totalIncome,
+        totalExpenses,
+        netIncome: totalIncome - totalExpenses,
+        expensesByCategory,
+        incomeByCategory,
+      };
+    };
 
-  const fetchFinancialData = async () => {
+    const fetchFinancialData = async () => {
     try {
       const response = await fetch("/api/chat/financial-data", {
         method: "GET",
@@ -105,29 +125,10 @@ const FinancialDashboard = ({ onToggle, isCollapsed = false }: FinancialDashboar
     } finally {
       setLoading(false);
     }
-  };
-
-  const calculateSummary = (data: FinancialUser): FinancialSummary => {
-    const totalBalance = data.accounts.reduce((sum, account) => sum + account.balance, 0);
-    
-    const allExpenses = data.accounts.flatMap(account => account.expenses);
-    const allDeposits = data.accounts.flatMap(account => account.deposits);
-    
-    const totalExpenses = allExpenses.reduce((sum, expense) => sum + expense.amount, 0);
-    const totalIncome = allDeposits.reduce((sum, deposit) => sum + deposit.amount, 0);
-    
-    const expensesByCategory = groupByCategory(allExpenses, 'expense');
-    const incomeByCategory = groupByCategory(allDeposits, 'deposit');
-    
-    return {
-      totalBalance,
-      totalIncome,
-      totalExpenses,
-      netIncome: totalIncome - totalExpenses,
-      expensesByCategory,
-      incomeByCategory,
     };
-  };
+
+    fetchFinancialData();
+  }, []);
 
   const groupByCategory = (items: any[], type: 'expense' | 'deposit'): CategorySummary[] => {
     const grouped = items.reduce((acc, item) => {
@@ -150,6 +151,49 @@ const FinancialDashboard = ({ onToggle, isCollapsed = false }: FinancialDashboar
       style: 'currency',
       currency: 'USD',
     }).format(amount);
+  };
+
+  const preparePieChartData = () => {
+    if (!summary) return [];
+    
+    return [
+      {
+        name: 'Total Balance',
+        value: summary.totalBalance,
+        color: '#10B981', // Green
+      },
+      {
+        name: 'Income',
+        value: summary.totalIncome,
+        color: '#3B82F6', // Blue
+      },
+      {
+        name: 'Expenses',
+        value: summary.totalExpenses,
+        color: '#EF4444', // Red
+      },
+    ];
+  };
+
+  const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
+    const RADIAN = Math.PI / 180;
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    return (
+      <text 
+        x={x} 
+        y={y} 
+        fill="white" 
+        textAnchor={x > cx ? 'start' : 'end'} 
+        dominantBaseline="central"
+        fontSize="10"
+        fontWeight="500"
+      >
+        {`${(percent * 100).toFixed(0)}%`}
+      </text>
+    );
   };
 
   const getCategoryColor = (category: string, type: 'expense' | 'deposit') => {
@@ -234,31 +278,57 @@ const FinancialDashboard = ({ onToggle, isCollapsed = false }: FinancialDashboar
       </div>
 
       <div className="p-4 space-y-4">
-        {/* Summary Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-green-50 p-3 rounded-lg">
-            <p className="text-sm text-green-600 font-medium">Total Balance</p>
-            <p className="text-lg font-bold text-green-800">
-              {summary ? formatCurrency(summary.totalBalance) : '--'}
-            </p>
-          </div>
-          <div className="bg-blue-50 p-3 rounded-lg">
-            <p className="text-sm text-blue-600 font-medium">Income</p>
-            <p className="text-lg font-bold text-blue-800">
-              {summary ? formatCurrency(summary.totalIncome) : '--'}
-            </p>
-          </div>
-          <div className="bg-red-50 p-3 rounded-lg">
-            <p className="text-sm text-red-600 font-medium">Expenses</p>
-            <p className="text-lg font-bold text-red-800">
-              {summary ? formatCurrency(summary.totalExpenses) : '--'}
-            </p>
-          </div>
-          <div className="bg-purple-50 p-3 rounded-lg">
-            <p className="text-sm text-purple-600 font-medium">Net Income</p>
-            <p className={`text-lg font-bold ${summary && summary.netIncome >= 0 ? 'text-green-800' : 'text-red-800'}`}>
-              {summary ? formatCurrency(summary.netIncome) : '--'}
-            </p>
+        {/* Financial Overview Pie Chart */}
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <h4 className="text-md font-semibold text-gray-800 mb-3 text-center">Financial Summary</h4>
+          <div className="flex flex-col lg:flex-row items-center">
+            <div className="w-full lg:w-1/2 h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={preparePieChartData()}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={renderCustomLabel}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {preparePieChartData().map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => formatCurrency(value as number)} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="w-full lg:w-1/2 lg:pl-6 mt-4 lg:mt-0">
+              <div className="space-y-3">
+                {preparePieChartData().map((item, index) => (
+                  <div key={index} className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <div 
+                        className="w-3 h-3 rounded-full" 
+                        style={{ backgroundColor: item.color }}
+                      ></div>
+                      <span className="text-sm font-medium text-gray-700">{item.name}</span>
+                    </div>
+                    <span className="text-sm font-bold text-gray-900">
+                      {formatCurrency(item.value)}
+                    </span>
+                  </div>
+                ))}
+                <div className="border-t pt-3 mt-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-purple-700">Net Income</span>
+                    <span className={`text-sm font-bold ${summary && summary.netIncome >= 0 ? 'text-green-700' : 'text-red-700'}`}>
+                      {summary ? formatCurrency(summary.netIncome) : '--'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

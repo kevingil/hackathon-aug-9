@@ -129,7 +129,7 @@ const ChatInterface = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50" style={{ paddingTop: '75px' }}>
+    <div className="flex h-[calc(100vh-150px)] bg-gray-50">
       {/* Financial Panel */}
       {showFinancialPanel && (
         <div className={`bg-gray-100 border-r border-gray-200 transition-all duration-300 ${

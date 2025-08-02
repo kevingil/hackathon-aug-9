@@ -1,79 +1,78 @@
 tool_definitions = [
     {
-        "name": "get_current_news_headlines",
-        "description": "Retrieves the current news headlines. The ticker symbol must be a valid symbol for a publicly traded company on a major US stock exchange like NYSE or NASDAQ. The tool will returns a list of news headlines. It should be used when providing user with financial advice. It will not provide any other information about the news article.",
+        "name": "weather",
+        "description": "Get current weather information for a location.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "location": {
+                    "type": "string",
+                    "description": "The location to get weather for.",
+                }
+            },
+            "required": ["location"],
+        },
+    },
+    {
+        "name": "search",
+        "description": "Search the web for information on any topic.",
         "input_schema": {
             "type": "object",
             "properties": {
                 "query": {
                     "type": "string",
-                    "description": "The search query to search on the news",
+                    "description": "The search query to look up.",
                 }
             },
             "required": ["query"],
         },
     },
     {
-        "name": "analyze_news_articles",
-        "description": "Analyses a list of news articles and returns a detailed summary of each of the articles. Will mainly provide whether the article is positive or negative. It should be used when providing user with financial advice. It will not provide any other information about the news article.",
+        "name": "search",
+        "description": "Search the web for information on any topic.",
         "input_schema": {
             "type": "object",
             "properties": {
-                "news_articles": {
-                    "type": "list",
-                    "description": "A list of news articles to analyze",
+                "query": {
+                    "type": "string",
+                    "description": "The search query to look up.",
                 }
             },
-            "required": ["news_articles"],
+            "required": ["query"],
         },
     },
     {
-        "name": "get_stock_data",
-        "description": "Retrieves the current stock price for a given ticker symbol. The ticker symbol must be a valid symbol for a publicly traded company on a major US stock exchange like NYSE or NASDAQ. The tool will return the latest trade price in USD. It should be used when the user asks about the current or most recent price of a specific stock. It will not provide any other information about the stock or company.",
+        "name": "search",
+        "description": "Search the web for information on any topic.",
         "input_schema": {
             "type": "object",
             "properties": {
-                "ticker": {
+                "query": {
                     "type": "string",
-                    "description": "The stock ticker symbol, e.g. AAPL for Apple Inc.",
+                    "description": "The search query to look up.",
                 }
             },
-            "required": ["ticker"],
+            "required": ["query"],
         },
     },
     {
-        "name": "analyze_stock_data",
-        "description": "Retrieves the current stock price for a given ticker symbol. The ticker symbol must be a valid symbol for a publicly traded company on a major US stock exchange like NYSE or NASDAQ. The tool will return the latest trade price in USD. It should be used when the user asks about the current or most recent price of a specific stock. It will not provide any other information about the stock or company.",
+        "name": "search",
+        "description": "Search the web for information on any topic.",
         "input_schema": {
             "type": "object",
             "properties": {
-                "ticker": {
+                "query": {
                     "type": "string",
-                    "description": "The stock ticker symbol, e.g. AAPL for Apple Inc.",
+                    "description": "The search query to look up.",
                 }
             },
-            "required": ["ticker"],
-        },
-    },
-    {
-        "name": "provide_advice",
-        "description": "Retrieves the current stock price for a given ticker symbol. The ticker symbol must be a valid symbol for a publicly traded company on a major US stock exchange like NYSE or NASDAQ. The tool will return the latest trade price in USD. It should be used when the user asks about the current or most recent price of a specific stock. It will not provide any other information about the stock or company.",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "information_on_stocks": {
-                    "type": "string",
-                    "description": "The stock ticker symbol, e.g. AAPL for Apple Inc.",
-                }
-            },
-            "required": ["ticker"],
+            "required": ["query"],
         },
     },
 ]
 
 
-
-# mock user data 
+# mock user data
 # all acvounts
 # expenses
 # expenses by category
@@ -82,4 +81,4 @@ tool_definitions = [
 
 
 # analyse accounts
-# 
+#

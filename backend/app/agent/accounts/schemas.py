@@ -13,9 +13,9 @@ class Expense(BaseModel):
 class Deposit(BaseModel):
     """Expsense model"""
 
-    id: int = Field(description="Expense ID")
-    amount: float = Field(description="Expense amount")
-    category: str = Field(description="Expense category")
+    id: int = Field(description="Deposite ID")
+    amount: float = Field(description="Deposit amount")
+    category: str = Field(description="Deposit category")
 
 
 class Account:
@@ -25,6 +25,7 @@ class Account:
     name: str = Field(description="Account name")
     expenses: List[Expense] = Field(description="Account expenses")
     deposits: List[Deposit] = Field(description="Account Deposits")
+    balance: float = Field(description="Account balance")
 
 
 class User(BaseModel):

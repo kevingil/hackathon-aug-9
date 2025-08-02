@@ -10,6 +10,48 @@ mock_user_data = [
                 id=1,
                 name="Checkings Account",
                 expenses=[
+                    Expense(id=1, amount=20.99, category="food"),
+                    Expense(id=2, amount=20.99, category="food"),
+                    Expense(id=3, amount=20.99, category="food"),
+                    Expense(id=4, amount=20.99, category="food"),
+                    Expense(id=5, amount=20.99, category="food"),
+                ],
+                despoits=[
+                    Deposit(id=1, amount=50000, category="work"),
+                    Deposit(id=2, amount=50000, category="work"),
+                    Deposit(id=3, amount=50000, category="work"),
+                    Deposit(id=4, amount=50000, category="work"),
+                    Deposit(id=5, amount=50000, category="work"),
+                ],
+            ),
+            Account(
+                id=2,
+                name="Savings Account",
+                expenses=[
+                    Expense(id=1, amount=10.99, category="food"),
+                    Expense(id=2, amount=10.99, category="food"),
+                    Expense(id=3, amount=10.99, category="food"),
+                    Expense(id=4, amount=10.99, category="food"),
+                    Expense(id=5, amount=10.99, category="food"),
+                ],
+                despoits=[
+                    Deposit(id=1, amount=10.99, category="food"),
+                    Deposit(id=2, amount=10.99, category="food"),
+                    Deposit(id=3, amount=10.99, category="food"),
+                    Deposit(id=4, amount=10.99, category="food"),
+                    Deposit(id=5, amount=10.99, category="food"),
+                ],
+            ),
+        ],
+        balance=1000,
+    ),
+    User(
+        id=1,
+        accounts=[
+            Account(
+                id=1,
+                name="Checkings Account",
+                expenses=[
                     Expense(id=1, amount=10.99, category="food"),
                     Expense(id=2, amount=10.99, category="food"),
                     Expense(id=3, amount=10.99, category="food"),
@@ -43,5 +85,90 @@ mock_user_data = [
                 ],
             ),
         ],
+        balance=1000,
+    ),
+    User(
+        id=1,
+        accounts=[
+            Account(
+                id=1,
+                name="Checkings Account",
+                expenses=[
+                    Expense(id=1, amount=10.99, category="food"),
+                    Expense(id=2, amount=10.99, category="food"),
+                    Expense(id=3, amount=10.99, category="food"),
+                    Expense(id=4, amount=10.99, category="food"),
+                    Expense(id=5, amount=10.99, category="food"),
+                ],
+                despoits=[
+                    Deposit(id=1, amount=10.99, category="food"),
+                    Deposit(id=2, amount=10.99, category="food"),
+                    Deposit(id=3, amount=10.99, category="food"),
+                    Deposit(id=4, amount=10.99, category="food"),
+                    Deposit(id=5, amount=10.99, category="food"),
+                ],
+            ),
+            Account(
+                id=2,
+                name="Savings Account",
+                expenses=[
+                    Expense(id=1, amount=10.99, category="food"),
+                    Expense(id=2, amount=10.99, category="food"),
+                    Expense(id=3, amount=10.99, category="food"),
+                    Expense(id=4, amount=10.99, category="food"),
+                    Expense(id=5, amount=10.99, category="food"),
+                ],
+                despoits=[
+                    Deposit(id=1, amount=10.99, category="food"),
+                    Deposit(id=2, amount=10.99, category="food"),
+                    Deposit(id=3, amount=10.99, category="food"),
+                    Deposit(id=4, amount=10.99, category="food"),
+                    Deposit(id=5, amount=10.99, category="food"),
+                ],
+            ),
+        ],
+        balance=1000,
+    ),
+    User(
+        id=1,
+        accounts=[
+            Account(
+                id=1,
+                name="Checkings Account",
+                expenses=[
+                    Expense(id=1, amount=10.99, category="food"),
+                    Expense(id=2, amount=10.99, category="food"),
+                    Expense(id=3, amount=10.99, category="food"),
+                    Expense(id=4, amount=10.99, category="food"),
+                    Expense(id=5, amount=10.99, category="food"),
+                ],
+                despoits=[
+                    Deposit(id=1, amount=10.99, category="food"),
+                    Deposit(id=2, amount=10.99, category="food"),
+                    Deposit(id=3, amount=10.99, category="food"),
+                    Deposit(id=4, amount=10.99, category="food"),
+                    Deposit(id=5, amount=10.99, category="food"),
+                ],
+            ),
+            Account(
+                id=2,
+                name="Savings Account",
+                expenses=[
+                    Expense(id=1, amount=10.99, category="food"),
+                    Expense(id=2, amount=10.99, category="food"),
+                    Expense(id=3, amount=10.99, category="food"),
+                    Expense(id=4, amount=10.99, category="food"),
+                    Expense(id=5, amount=10.99, category="food"),
+                ],
+                despoits=[
+                    Deposit(id=1, amount=10.99, category="food"),
+                    Deposit(id=2, amount=10.99, category="food"),
+                    Deposit(id=3, amount=10.99, category="food"),
+                    Deposit(id=4, amount=10.99, category="food"),
+                    Deposit(id=5, amount=10.99, category="food"),
+                ],
+            ),
+        ],
+        balance=1000,
     ),
 ]

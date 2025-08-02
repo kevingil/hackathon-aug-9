@@ -66,7 +66,7 @@ const ChatInterface = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${BASE_URL}/chat/messages`, {
+      const response = await fetch(`${BASE_URL}/api/chat/message`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -130,48 +130,28 @@ const ChatInterface = () => {
   };
 
   return (
-    <div className="flex h-[calc(100vh-150px)] bg-gray-50">
-      {/* Financial Panel */}
-      {showFinancialPanel && (
-        <div className={`bg-gray-100 border-r border-gray-200 transition-all duration-300 ${
-          isFinancialCollapsed ? 'w-80' : 'w-96'
-        }`}>
-          <div className="h-full overflow-y-auto p-4">
-            <FinancialDashboard 
-              onToggle={toggleFinancialCollapsed}
-              isCollapsed={isFinancialCollapsed}
-            />
-          </div>
-        </div>
-      )}
-
+    <div className="flex h-[calc(100vh-0px)] bg-white">
       {/* Chat Section */}
-      <div className="flex flex-col flex-1 min-w-0">
+      <div className={`flex flex-col transition-all duration-300 min-w-[500px] w-[500px]`}>
         {/* Chat Header */}
-        <div className="bg-white border-b border-gray-200 px-6 py-3">
+        <div className="bg-white border-b border-gray-100 px-8 py-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Rocket Agent 🚀</h2>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                <span className="text-white text-sm font-bold">🚀</span>
+              </div>
+              <h2 className="text-xl font-semibold text-gray-900">Rocket Agent</h2>
+            </div>
+            <div className="flex items-center space-x-3">
               {!showFinancialPanel && (
                 <button
                   onClick={toggleFinancialPanel}
-                  className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-md transition-colors"
+                  className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all duration-200 border border-gray-200"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                   </svg>
-                  <span>Show Financial Panel</span>
-                </button>
-              )}
-              {showFinancialPanel && (
-                <button
-                  onClick={toggleFinancialPanel}
-                  className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-md transition-colors"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                  <span>Hide Panel</span>
+                  <span>Show Dashboard</span>
                 </button>
               )}
             </div>
@@ -179,39 +159,60 @@ const ChatInterface = () => {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-          {messages.length === 0 && (
-            <div className="text-center text-gray-500 mt-20">
-              <h2 className="text-lg font-medium mb-2">Welcome to Your Financial Planning Assistant</h2>
-              <p>I can help you analyze your finances, plan budgets, and make financial decisions.</p>
-              <p className="text-sm mt-2">Ask me about your spending patterns, savings goals, or investment advice!</p>
-              {!showFinancialPanel && (
-                <div className="mt-4">
-                  <button
-                    onClick={toggleFinancialPanel}
-                    className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                    <span>View Financial Dashboard</span>
-                  </button>
+        <div className="flex-1 overflow-y-auto">
+          <div className="max-w-4xl mx-auto px-8 py-6 space-y-6">
+            {messages.length === 0 && (
+              <div className="text-center py-16">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl mx-auto mb-6 flex items-center justify-center">
+                  <span className="text-white text-2xl">🚀</span>
                 </div>
-              )}
-            </div>
-          )}
+                <h2 className="text-2xl font-semibold text-gray-900 mb-3">Welcome to Your Financial Assistant</h2>
+                <p className="text-gray-600 mb-2 max-w-md mx-auto">I can help you analyze your finances, plan budgets, and make smart financial decisions.</p>
+                <p className="text-sm text-gray-500 mb-8">Ask me about your spending patterns, savings goals, or investment advice!</p>
+              </div>
+            )}
 
-          {messages.map((message) => (
-            <ChatMessage key={message.id} message={message} />
-          ))}
-          <div ref={messagesEndRef} />
+            {messages.map((message) => (
+              <ChatMessage key={message.id} message={message} />
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
         </div>
 
         {/* Input */}
-        <div className="border-t border-gray-200 bg-white px-6 py-4">
-          <ChatInput onSendMessage={sendMessage} disabled={isLoading} />
+        <div className="border-t border-gray-100 bg-white">
+          <div className="max-w-4xl mx-auto px-8 py-6">
+            <ChatInput onSendMessage={sendMessage} disabled={isLoading} />
+          </div>
         </div>
       </div>
+
+      {/* Financial Panel - Right Side */}
+
+        <div className={`bg-gray-50 border-l border-gray-100 transition-all duration-300 w-full overflow-y-auto`}>
+          <div className="h-full ">
+            <div className="sticky top-0 bg-gray-50 border-b border-gray-200 px-6 py-4 z-10">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900">Financial Dashboard</h3>
+                <button
+                  onClick={toggleFinancialCollapsed}
+                  className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                      d={isFinancialCollapsed ? "M4 8h16M4 16h16" : "M20 12H4"} />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div className="p-6">
+              <FinancialDashboard 
+                onToggle={toggleFinancialCollapsed}
+                isCollapsed={isFinancialCollapsed}
+              />
+            </div>
+          </div>
+        </div>
     </div>
   );
 };

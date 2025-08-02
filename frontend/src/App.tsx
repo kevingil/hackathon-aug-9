@@ -1,7 +1,5 @@
 import { Route, Routes } from "react-router-dom";
 import PrivateRoute from "./components/PrivateRoute";
-import Footer from "./components/Layout/Footer";
-import Navigation from "./components/Layout/NavBar";
 import Home from "./pages/Home";
 import AuthPage from "./pages/Auth";
 import ProfilePage from "./pages/Profile";
@@ -10,7 +8,7 @@ import ChatInterface from "./components/Chat/ChatInterface";
 function App() {
   return (
     <div className="flex flex-col min-h-screen">
-      <Navigation />
+      {/* <Navigation /> */}
 
       <main className="flex-grow">
         <Routes>
@@ -23,7 +21,7 @@ function App() {
         </Routes>
       </main>
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }

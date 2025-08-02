@@ -133,15 +133,3 @@ tool_definitions = [
         "type": "function",
     },
 ]
-
-
-# mock user data
-# all acvounts
-# expenses
-# expenses by category
-# good spender
-# bad spender
-
-
-# analyse accounts
-#

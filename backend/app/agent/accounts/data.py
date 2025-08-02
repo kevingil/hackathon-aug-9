@@ -1,6 +1,5 @@
 from schemas import User, Expense, Account, Deposit
 
-
 # Create some mock data
 mock_user_data = [
     User(
@@ -10,165 +9,140 @@ mock_user_data = [
                 id=1,
                 name="Checkings Account",
                 expenses=[
-                    Expense(id=1, amount=20.99, category="food"),
-                    Expense(id=2, amount=20.99, category="food"),
-                    Expense(id=3, amount=20.99, category="food"),
-                    Expense(id=4, amount=20.99, category="food"),
-                    Expense(id=5, amount=20.99, category="food"),
+                    Expense(id=1, amount=100.0, category="food"),
+                    Expense(id=2, amount=200.0, category="rent"),
+                    Expense(id=3, amount=50.0, category="entertainment"),
                 ],
-                despoits=[
-                    Deposit(id=1, amount=50000, category="work"),
-                    Deposit(id=2, amount=50000, category="work"),
-                    Deposit(id=3, amount=50000, category="work"),
-                    Deposit(id=4, amount=50000, category="work"),
-                    Deposit(id=5, amount=50000, category="work"),
+                deposits=[
+                    Deposit(id=1, amount=500.0, category="work"),
+                    Deposit(id=2, amount=200.0, category="gift"),
                 ],
+                balance=450.0,
             ),
             Account(
                 id=2,
                 name="Savings Account",
                 expenses=[
-                    Expense(id=1, amount=10.99, category="food"),
-                    Expense(id=2, amount=10.99, category="food"),
-                    Expense(id=3, amount=10.99, category="food"),
-                    Expense(id=4, amount=10.99, category="food"),
-                    Expense(id=5, amount=10.99, category="food"),
+                    Expense(id=1, amount=20.0, category="savings"),
                 ],
-                despoits=[
-                    Deposit(id=1, amount=10.99, category="food"),
-                    Deposit(id=2, amount=10.99, category="food"),
-                    Deposit(id=3, amount=10.99, category="food"),
-                    Deposit(id=4, amount=10.99, category="food"),
-                    Deposit(id=5, amount=10.99, category="food"),
+                deposits=[
+                    Deposit(id=1, amount=1000.0, category="work"),
+                    Deposit(id=2, amount=500.0, category="gift"),
                 ],
+                balance=1480.0,
             ),
         ],
-        balance=1000,
     ),
     User(
-        id=1,
+        id=2,
         accounts=[
             Account(
-                id=1,
+                id=3,
                 name="Checkings Account",
                 expenses=[
-                    Expense(id=1, amount=10.99, category="food"),
-                    Expense(id=2, amount=10.99, category="food"),
-                    Expense(id=3, amount=10.99, category="food"),
-                    Expense(id=4, amount=10.99, category="food"),
-                    Expense(id=5, amount=10.99, category="food"),
+                    Expense(id=1, amount=150.0, category="food"),
+                    Expense(id=2, amount=300.0, category="rent"),
+                    Expense(id=3, amount=75.0, category="entertainment"),
                 ],
-                despoits=[
-                    Deposit(id=1, amount=10.99, category="food"),
-                    Deposit(id=2, amount=10.99, category="food"),
-                    Deposit(id=3, amount=10.99, category="food"),
-                    Deposit(id=4, amount=10.99, category="food"),
-                    Deposit(id=5, amount=10.99, category="food"),
+                deposits=[
+                    Deposit(id=1, amount=600.0, category="work"),
+                    Deposit(id=2, amount=300.0, category="gift"),
                 ],
+                balance=375.0,
             ),
             Account(
-                id=2,
+                id=4,
                 name="Savings Account",
                 expenses=[
-                    Expense(id=1, amount=10.99, category="food"),
-                    Expense(id=2, amount=10.99, category="food"),
-                    Expense(id=3, amount=10.99, category="food"),
-                    Expense(id=4, amount=10.99, category="food"),
-                    Expense(id=5, amount=10.99, category="food"),
+                    Expense(id=1, amount=30.0, category="savings"),
                 ],
-                despoits=[
-                    Deposit(id=1, amount=10.99, category="food"),
-                    Deposit(id=2, amount=10.99, category="food"),
-                    Deposit(id=3, amount=10.99, category="food"),
-                    Deposit(id=4, amount=10.99, category="food"),
-                    Deposit(id=5, amount=10.99, category="food"),
+                deposits=[
+                    Deposit(id=1, amount=1200.0, category="work"),
+                    Deposit(id=2, amount=600.0, category="gift"),
                 ],
+                balance=1770.0,
             ),
         ],
-        balance=1000,
     ),
     User(
-        id=1,
+        id=3,
         accounts=[
             Account(
-                id=1,
+                id=5,
                 name="Checkings Account",
                 expenses=[
-                    Expense(id=1, amount=10.99, category="food"),
-                    Expense(id=2, amount=10.99, category="food"),
-                    Expense(id=3, amount=10.99, category="food"),
-                    Expense(id=4, amount=10.99, category="food"),
-                    Expense(id=5, amount=10.99, category="food"),
+                    Expense(id=1, amount=200.0, category="food"),
+                    Expense(id=2, amount=400.0, category="rent"),
+                    Expense(id=3, amount=100.0, category="entertainment"),
                 ],
-                despoits=[
-                    Deposit(id=1, amount=10.99, category="food"),
-                    Deposit(id=2, amount=10.99, category="food"),
-                    Deposit(id=3, amount=10.99, category="food"),
-                    Deposit(id=4, amount=10.99, category="food"),
-                    Deposit(id=5, amount=10.99, category="food"),
+                deposits=[
+                    Deposit(id=1, amount=700.0, category="work"),
+                    Deposit(id=2, amount=400.0, category="gift"),
                 ],
+                balance=300.0,
             ),
             Account(
-                id=2,
+                id=6,
                 name="Savings Account",
                 expenses=[
-                    Expense(id=1, amount=10.99, category="food"),
-                    Expense(id=2, amount=10.99, category="food"),
-                    Expense(id=3, amount=10.99, category="food"),
-                    Expense(id=4, amount=10.99, category="food"),
-                    Expense(id=5, amount=10.99, category="food"),
+                    Expense(id=1, amount=40.0, category="savings"),
                 ],
-                despoits=[
-                    Deposit(id=1, amount=10.99, category="food"),
-                    Deposit(id=2, amount=10.99, category="food"),
-                    Deposit(id=3, amount=10.99, category="food"),
-                    Deposit(id=4, amount=10.99, category="food"),
-                    Deposit(id=5, amount=10.99, category="food"),
+                deposits=[
+                    Deposit(id=1, amount=1400.0, category="work"),
+                    Deposit(id=2, amount=700.0, category="gift"),
                 ],
+                balance=2060.0,
             ),
         ],
-        balance=1000,
     ),
     User(
-        id=1,
+        id=4,
         accounts=[
             Account(
-                id=1,
+                id=7,
                 name="Checkings Account",
                 expenses=[
-                    Expense(id=1, amount=10.99, category="food"),
-                    Expense(id=2, amount=10.99, category="food"),
-                    Expense(id=3, amount=10.99, category="food"),
-                    Expense(id=4, amount=10.99, category="food"),
-                    Expense(id=5, amount=10.99, category="food"),
+                    Expense(id=1, amount=250.0, category="food"),
+                    Expense(id=2, amount=500.0, category="rent"),
+                    Expense(id=3, amount=125.0, category="entertainment"),
                 ],
-                despoits=[
-                    Deposit(id=1, amount=10.99, category="food"),
-                    Deposit(id=2, amount=10.99, category="food"),
-                    Deposit(id=3, amount=10.99, category="food"),
-                    Deposit(id=4, amount=10.99, category="food"),
-                    Deposit(id=5, amount=10.99, category="food"),
+                deposits=[
+                    Deposit(id=1, amount=800.0, category="work"),
+                    Deposit(id=2, amount=500.0, category="gift"),
                 ],
+                balance=225.0,
             ),
             Account(
-                id=2,
+                id=8,
                 name="Savings Account",
                 expenses=[
-                    Expense(id=1, amount=10.99, category="food"),
-                    Expense(id=2, amount=10.99, category="food"),
-                    Expense(id=3, amount=10.99, category="food"),
-                    Expense(id=4, amount=10.99, category="food"),
-                    Expense(id=5, amount=10.99, category="food"),
+                    Expense(id=1, amount=50.0, category="savings"),
                 ],
-                despoits=[
-                    Deposit(id=1, amount=10.99, category="food"),
-                    Deposit(id=2, amount=10.99, category="food"),
-                    Deposit(id=3, amount=10.99, category="food"),
-                    Deposit(id=4, amount=10.99, category="food"),
-                    Deposit(id=5, amount=10.99, category="food"),
+                deposits=[
+                    Deposit(id=1, amount=1600.0, category="work"),
+                    Deposit(id=2, amount=800.0, category="gift"),
                 ],
+                balance=2350.0,
             ),
         ],
-        balance=1000,
+    ),
+    User(
+        id=5,
+        accounts=[
+            Account(
+                id=9,
+                name="Checkings Account",
+                expenses=[
+                    Expense(id=1, amount=300.0, category="food"),
+                    Expense(id=2, amount=600.0, category="rent"),
+                    Expense(id=3, amount=150.0, category="entertainment"),
+                ],
+                deposits=[
+                    Deposit(id=1, amount=900.0, category="work"),
+                    Deposit(id=2, amount=600.0, category="gift"),
+                ],
+                balance=150.0,
+            )
+        ],
     ),
 ]

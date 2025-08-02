@@ -113,30 +113,89 @@ tool_definitions = [
     },
     {
         "name": "analyze_user_account",
-        "description": "Analyze the users finances by going through their accounts.",
+        "description": "Analyze the user's finances by going through their accounts.",
         "input_schema": {
             "type": "object",
             "properties": {
-                "results": {
-                    "type": "object",
-                    "properties": {
-                        "name": {
-                            "type": "string",
-                            "description": "The name of the tool.",
+                "id": {"type": "integer", "description": "User ID"},
+                "accounts": {
+                    "type": "array",
+                    "description": "User accounts",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {"type": "integer", "description": "Account ID"},
+                            "name": {"type": "string", "description": "Account name"},
+                            "balance": {
+                                "type": "number",
+                                "description": "Account balance",
+                            },
+                            "expenses": {
+                                "type": "array",
+                                "description": "Account expenses",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "description": "Expense ID",
+                                        },
+                                        "amount": {
+                                            "type": "number",
+                                            "description": "Expense amount",
+                                        },
+                                        "category": {
+                                            "type": "string",
+                                            "description": "Expense category",
+                                        },
+                                        "date": {
+                                            "type": "string",
+                                            "description": "Transaction date",
+                                        },
+                                        "description": {
+                                            "type": "string",
+                                            "description": "Transaction description",
+                                        },
+                                    },
+                                    "required": ["id", "amount", "category"],
+                                },
+                            },
+                            "deposits": {
+                                "type": "array",
+                                "description": "Account deposits",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "description": "Deposit ID",
+                                        },
+                                        "amount": {
+                                            "type": "number",
+                                            "description": "Deposit amount",
+                                        },
+                                        "category": {
+                                            "type": "string",
+                                            "description": "Deposit category",
+                                        },
+                                        "date": {
+                                            "type": "string",
+                                            "description": "Transaction date",
+                                        },
+                                        "description": {
+                                            "type": "string",
+                                            "description": "Transaction description",
+                                        },
+                                    },
+                                    "required": ["id", "amount", "category"],
+                                },
+                            },
                         },
-                        "result": {
-                            "type": "string",
-                            "description": "The result of the tool.",
-                        },
-                        "error": {
-                            "type": "boolean",
-                            "description": "Whether an error occurred.",
-                        },
+                        "required": ["id", "name", "balance", "expenses", "deposits"],
                     },
-                    "required": ["name", "result", "error"],
-                }
+                },
             },
-            "required": ["results"],
+            "required": ["id", "accounts"],
         },
     },
 ]

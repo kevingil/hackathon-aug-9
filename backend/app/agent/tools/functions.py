@@ -1,43 +1,12 @@
 import anthropic  # type: ignore
-from app.chat.accounts.schemas import User
-
-from pydantic import BaseModel, Field
-from typing import List
+from app.chat.accounts.schemas import (
+    User,
+    ToolResults,
+    ToolResultsAnalysis,
+    UserAnalysis,
+)
 
 CLIENT = anthropic.Anthropic()
-
-
-class ToolResults(BaseModel):
-    """Results model."""
-
-    name: str = Field(description="Tool name")
-    result: str = Field(description="The results of the tool calls")
-    error: bool = Field(description="Error flag")
-
-
-class ToolResultsAnalysis(BaseModel):
-    """"""
-
-    results: List[ToolResults] = Field(description="The analysis of the results")
-
-
-class AccountAnalysis(BaseModel):
-    """Account analysis model."""
-
-    id: str = Field(description="The account ID")
-    name: str = Field(description="Account name")
-    analysis: str = Field(description="The analysis of the account")
-    error: bool = Field(description="Error flag")
-
-
-class UserAnalysis(BaseModel):
-    """User analysis model."""
-
-    id: str = Field(description="The user ID")
-    name: str = Field(description="User name")
-    accounnt_analysis: List[AccountAnalysis] = Field(description="")
-    overall_analysis: str = Field(description="Tool response")
-    error: bool = Field(description="Error flag")
 
 
 def format_user_account_to_markdown(user: User) -> str:

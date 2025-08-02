@@ -1,5 +1,5 @@
 // import { Link } from "react-router-dom";
-import { PROJECT_NAME } from "../../data/ProjectName";
+import { PROJECT_NAME } from "../../api/const";
 const Footer = () => {
   return (
     <footer className="bg-gray-900 text-white text-center py-3">

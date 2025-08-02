@@ -1,4 +1,4 @@
-import { BASE_URL } from "./url";
+import { BASE_URL } from "./const";
 
 export const getUserProfile = async (userId: string, token: string) => {
   const res = await fetch(`${BASE_URL}/profile/${userId}`, {

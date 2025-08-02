@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import ChatMessage from "../Chat/ChatMessage";
 import ChatInput from "../Chat/ChatInput";
 import FinancialDashboard from "../Financial/FinancialDashboard";
+import { BASE_URL } from "../../api/const";
 
 export interface ChatBlock {
   type: "thinking" | "redacted_thinking" | "text" | "tool_use" | "tool_result";
@@ -65,7 +66,7 @@ const ChatInterface = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/chat/message", {
+      const response = await fetch(`${BASE_URL}/chat/messages`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

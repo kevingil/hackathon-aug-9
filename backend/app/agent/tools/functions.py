@@ -5,6 +5,7 @@ from app.chat.accounts.schemas import (  # type: ignore
     ToolResults,
     ToolResultsAnalysis,
     UserAnalysis,
+    AccountAnalysis,
 )
 from app.agent.tools.artifacts import (  # type: ignore
     UnifiedSearchResponse,
@@ -92,14 +93,14 @@ def analyze_results(results: ToolResults):
                 "content": f"Analyzse these tool results to see what relavent decisions can be made: {results_formated}",
             }
         ],
-        response_model=ToolResultsAnalysis,
     )
     return response
 
 
-def analyze_user_account() -> str:
+def analyze_user_account() -> UserAnalysis:
     """Analyze a user account."""
-    user_formated = format_user_account_to_markdown(mock_user_data[0])
+    user_data = mock_user_data[0]
+    user_formated = format_user_account_to_markdown(user_data)
     response = CLIENT.messages.create(
         model="claude-3-haiku-20240307",
         max_tokens=4000,
@@ -110,7 +111,7 @@ def analyze_user_account() -> str:
             }
         ],
     )
-    return response.content
+    return response
 
 
 def parse_composio_search_results(composio_result: dict) -> dict:

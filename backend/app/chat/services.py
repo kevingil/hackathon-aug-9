@@ -10,7 +10,7 @@ from app.agent.tools.functions import (  # type: ignore
 )
 from app.agent.tools.definitions import tool_definitions  # type: ignore
 from composio import Composio  # type: ignore
-from app.chat.accounts.data import mock_user_data
+from app.chat.accounts.data import mock_user_data  # type: ignore
 
 
 class ChatService:
@@ -616,10 +616,12 @@ Remember: Always ground your advice in the user's actual financial data combined
             if tool_name == "analyze_user_account":
                 print(f"MOCK USER DATA: {mock_user_data[0]}")
                 result = analyze_user_account()
-                return {"search_results": result}
+                # Return the UserAnalysis object as a dict for JSON serialization
+                return {"user_analysis": result.model_dump()}
             elif tool_name == "analyze_results":
                 result = analyze_results(tool_input["results"])
-                return {"search_results": result}
+                # Return the ToolResultsAnalysis object as a dict for JSON serialization
+                return {"analysis_results": result.model_dump()}
             print("Executing Composio tool for non-weather request")
             print(f"User ID: {self.user_id}")
             composio = Composio()

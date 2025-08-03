@@ -69,6 +69,6 @@ class UserAnalysis(BaseModel):
 
     id: str = Field(description="The user ID")
     name: str = Field(description="User name")
-    accounnt_analysis: List[AccountAnalysis] = Field(description="")
-    overall_analysis: str = Field(description="Tool response")
+    account_analysis: List[AccountAnalysis] = Field(description="Analysis for each account")
+    overall_analysis: str = Field(description="Overall financial analysis and recommendations")
     error: bool = Field(description="Error flag")

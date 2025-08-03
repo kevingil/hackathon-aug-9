@@ -184,7 +184,7 @@ const SearchResultsArtifact = ({ results }: { results: UnifiedSearchResponse }) 
       {/* Markets */}
       {search_results.markets && Object.entries(search_results.markets).map(([region, marketResults]) => (
         <div key={region}>
-          <h4 className="text-xs font-semibold text-gray-700 mb-2 uppercase">📈 {getRegionDisplayName(region)}</h4>
+          <p className="text-md font-semibold text-gray-700 mb-2 capitalize">📈 {getRegionDisplayName(region)}</p>
           {marketResults.slice(0, 5).map((result, idx) => (
             <MarketCard key={idx} result={result} />
           ))}
@@ -248,12 +248,7 @@ const ToolBlock = ({ type, toolName, toolInput, toolResult }: ToolBlockProps) =>
     <div className="border-t border-gray-100 bg-gray-50">
       <div className="px-4 py-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <span className="text-xs font-light text-gray-500">
-              {getToolIcon(toolName)} {type === "use" ? "Using" : "Used"} {toolName}
-            </span>
-          </div>
-          {(type === "use" || !shouldShowArtifact) && (
+          {((type === "use" && toolInput && !(toolInput.q || toolInput.query)) || (type === "result" && !shouldShowArtifact)) && (
             <button
               onClick={() => setIsExpanded(!isExpanded)}
               className="text-xs text-gray-300 hover:text-gray-400 transition-all"
@@ -263,11 +258,19 @@ const ToolBlock = ({ type, toolName, toolInput, toolResult }: ToolBlockProps) =>
           )}
         </div>
 
-        {type === "use" && isExpanded && (
+        {type === "use" && (
           <div className="text-xs text-gray-500 mt-2">
-            <div className="bg-white rounded border p-2 text-gray-600 font-mono">
-              {JSON.stringify(toolInput, null, 2)}
-            </div>
+            {toolInput && (toolInput.q || toolInput.query) ? (
+              <div className="text-gray-600">
+                {getToolIcon(toolName)} Looking for <span className="italic">{toolInput.q || toolInput.query}</span>
+              </div>
+            ) : (
+              isExpanded && (
+                <div className="bg-white rounded border p-2 text-gray-600 font-mono">
+                  {JSON.stringify(toolInput, null, 2)}
+                </div>
+              )
+            )}
           </div>
         )}
 

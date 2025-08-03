@@ -16,7 +16,7 @@ from app.agent.tools.artifacts import (  # type: ignore
     MarketResult,
     PriceMovement,
 )
-from app.chat.accounts.data import mock_user_data
+from app.chat.accounts.data import mock_user_data # type: ignore
 
 CLIENT = anthropic.Anthropic()
 
@@ -59,13 +59,13 @@ def format_user_account_to_markdown(user: User) -> str:
     return user_entry
 
 
-def format_tool_results_to_markdown(tool_results: ToolResults) -> str:
+def format_tool_results_to_markdown(tool_results: dict) -> str:
     """Format tool results to markdown."""
     output = []
     tool_entry = f"""
-    ## Tool: {tool_results.name}
-    - **Result:** {tool_results.result}  
-    - **Error:** {tool_results.error}  
+    ## Tool: {tool_results.get("name", "None")}
+    - **Result:** {tool_results.get("result", "None")}  
+    - **Error:** {tool_results.get("error", "None")}  
 
     """
     output.append(tool_entry.strip())

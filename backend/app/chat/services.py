@@ -79,6 +79,242 @@ class ChatService:
             print(f"Traceback: {traceback.format_exc()}")
             return {"success": False, "error": str(e)}
 
+    def process_message_stream(self, user_message):
+        """
+        Process a user message using the agent's multiple_tool_calls_with_thinking logic.
+        Yields structured response data blocks for SSE streaming.
+        """
+        print("\n=== CHAT SERVICE: Processing new message (STREAMING) ===")
+        print(f"User message: {user_message}")
+        print(f"Model: {self.model_name}")
+        print(f"Max tokens: {self.max_tokens}")
+
+        try:
+            # Initial request (same structure as agent.py)
+            print("\n--- Making initial API call to Claude ---")
+            response = self.client.messages.create(
+                model=self.model_name,
+                max_tokens=self.max_tokens,
+                thinking={
+                    "type": "enabled",
+                    "budget_tokens": self.thinking_budget_tokens,
+                },
+                tools=self.tools,
+                messages=[{"role": "user", "content": user_message}],
+            )
+
+            print(f"Initial response stop_reason: {response.stop_reason}")
+            print(f"Initial response content blocks: {len(response.content)}")
+
+            # Process the response and handle tool calls
+            conversation_history = [{"role": "user", "content": user_message}]
+            print(
+                f"Starting conversation history with {len(conversation_history)} messages"
+            )
+
+            # Stream the response chain
+            yield from self._handle_response_chain_stream(response, conversation_history)
+
+            print("\n=== CHAT SERVICE: Processing complete (STREAMING) ===")
+
+        except Exception as e:
+            print("\n!!! CHAT SERVICE ERROR (STREAMING) !!!")
+            print(f"Error type: {type(e).__name__}")
+            print(f"Error message: {str(e)}")
+            import traceback
+            print(f"Traceback: {traceback.format_exc()}")
+            
+            yield {
+                "type": "error",
+                "error": str(e)
+            }
+
+    def _handle_response_chain_stream(self, response, conversation_history):
+        """
+        Handle the full response chain including tool calls, streaming blocks as they're processed.
+        Yields structured response data blocks for SSE.
+        """
+        print("\n--- Starting response chain handling (STREAMING) ---")
+        iteration = 0
+        total_blocks_sent = 0
+
+        while response.stop_reason == "tool_use":
+            iteration += 1
+            print(f"\n*** ITERATION {iteration} (STREAMING) ***")
+            print(f"Stop reason: {response.stop_reason}")
+            print(f"Content blocks in response: {len(response.content)}")
+
+            # Log block types in this response
+            block_types = [block.type for block in response.content]
+            print(f"Block types: {block_types}")
+
+            # Extract and stream blocks from current response
+            for block in response.content:
+                block_data = None
+                if block.type == "thinking":
+                    block_data = {
+                        "type": "thinking",
+                        "content": block.thinking,
+                        "iteration": iteration,
+                    }
+                elif block.type == "redacted_thinking":
+                    block_data = {
+                        "type": "redacted_thinking",
+                        "content": "[Thinking content redacted]",
+                        "iteration": iteration,
+                    }
+                elif block.type == "text":
+                    block_data = {
+                        "type": "text", 
+                        "content": block.text, 
+                        "iteration": iteration
+                    }
+                elif block.type == "tool_use":
+                    block_data = {
+                        "type": "tool_use",
+                        "tool_name": block.name,
+                        "tool_input": block.input,
+                        "tool_id": block.id,
+                        "iteration": iteration,
+                    }
+
+                if block_data:
+                    yield {
+                        "type": "block",
+                        "block": block_data
+                    }
+                    total_blocks_sent += 1
+                    print(f"Streamed block {total_blocks_sent}: {block_data['type']}")
+
+            # Add assistant response to conversation history
+            assistant_blocks = []
+            for block in response.content:
+                if block.type in ["thinking", "redacted_thinking", "tool_use"]:
+                    assistant_blocks.append(block)
+
+            conversation_history.append(
+                {"role": "assistant", "content": assistant_blocks}
+            )
+            print("Added assistant message to conversation history")
+
+            # Execute ALL tool_use blocks if there are any
+            tool_use_blocks = [
+                block for block in response.content if block.type == "tool_use"
+            ]
+            if tool_use_blocks:
+                print(f"*** TOOL EXECUTION ({len(tool_use_blocks)} tools) (STREAMING) ***")
+
+                # Collect all tool results
+                tool_results_content = []
+
+                for tool_use_block in tool_use_blocks:
+                    print(f"Tool name: {tool_use_block.name}")
+                    print(f"Tool input: {tool_use_block.input}")
+                    print(f"Tool ID: {tool_use_block.id}")
+
+                    # Execute the tool
+                    tool_result = self._execute_tool(
+                        tool_use_block.name, tool_use_block.input
+                    )
+                    print(f"Tool execution result: {tool_result}")
+
+                    # Stream tool result block
+                    tool_result_data = {
+                        "type": "tool_result",
+                        "tool_name": tool_use_block.name,
+                        "tool_input": tool_use_block.input,
+                        "tool_result": tool_result,
+                        "iteration": iteration,
+                    }
+                    
+                    yield {
+                        "type": "block",
+                        "block": tool_result_data
+                    }
+                    total_blocks_sent += 1
+                    print(f"Streamed tool result block {total_blocks_sent}")
+
+                    # Collect tool result for conversation history
+                    tool_results_content.append(
+                        {
+                            "type": "tool_result",
+                            "tool_use_id": tool_use_block.id,
+                            "content": json.dumps(tool_result),
+                        }
+                    )
+
+                # Add ALL tool results to conversation in a single message
+                conversation_history.append(
+                    {
+                        "role": "user",
+                        "content": tool_results_content,
+                    }
+                )
+                print(
+                    f"Added {len(tool_results_content)} tool results to conversation history. Total messages: {len(conversation_history)}"
+                )
+
+                # Continue the conversation
+                print("*** CONTINUING CONVERSATION AFTER TOOL USE (STREAMING) ***")
+                response = self.client.messages.create(
+                    model=self.model_name,
+                    max_tokens=self.max_tokens,
+                    thinking={
+                        "type": "enabled",
+                        "budget_tokens": self.thinking_budget_tokens,
+                    },
+                    tools=self.tools,
+                    messages=conversation_history,
+                )
+            else:
+                print("No tool_use block found, breaking loop")
+                break
+
+        # Handle final response (no more tool use)
+        print("\n*** FINAL RESPONSE PROCESSING (STREAMING) ***")
+        print(f"Final stop reason: {response.stop_reason}")
+        if response.stop_reason != "tool_use":
+            for block in response.content:
+                block_data = None
+                if block.type == "thinking":
+                    block_data = {
+                        "type": "thinking",
+                        "content": block.thinking,
+                        "iteration": iteration + 1,
+                    }
+                elif block.type == "redacted_thinking":
+                    block_data = {
+                        "type": "redacted_thinking",
+                        "content": "[Thinking content redacted]",
+                        "iteration": iteration + 1,
+                    }
+                elif block.type == "text":
+                    block_data = {
+                        "type": "text",
+                        "content": block.text,
+                        "iteration": iteration + 1,
+                    }
+
+                if block_data:
+                    yield {
+                        "type": "block",
+                        "block": block_data
+                    }
+                    total_blocks_sent += 1
+                    print(f"Streamed final block {total_blocks_sent}: {block_data['type']}")
+
+        # Send completion event
+        print("\n--- Response chain handling complete (STREAMING) ---")
+        print(f"Total blocks streamed: {total_blocks_sent}")
+        print(f"Total iterations: {iteration + 1}")
+
+        yield {
+            "type": "complete",
+            "stop_reason": response.stop_reason,
+            "total_iterations": iteration + 1,
+            "total_blocks": total_blocks_sent
+        }
+
     def _handle_response_chain(self, response, conversation_history):
         """
         Handle the full response chain including tool calls, following agent.py logic.

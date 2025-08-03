@@ -28,6 +28,7 @@ export interface Message {
   response?: ChatResponse;
   timestamp: Date;
   isLoading?: boolean;
+  isStreaming?: boolean;
 }
 
 const ChatInterface = () => {
@@ -55,65 +56,153 @@ const ChatInterface = () => {
       timestamp: new Date(),
     };
 
+    const assistantMessageId = (Date.now() + 1).toString();
     const loadingMessage: Message = {
-      id: (Date.now() + 1).toString(),
+      id: assistantMessageId,
       role: "assistant", 
       content: "Thinking...",
       timestamp: new Date(),
       isLoading: true,
+      isStreaming: false,
+      response: {
+        blocks: [],
+        stop_reason: "",
+        total_iterations: 0,
+      }
     };
 
     setMessages(prev => [...prev, userMessage, loadingMessage]);
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${BASE_URL}/api/chat/message`, {
+      // Create a unique URL for this request to avoid caching issues
+      const streamUrl = `${BASE_URL}/api/chat/message/stream?t=${Date.now()}`;
+      
+      // Send the message content via POST to get a streaming response
+      const response = await fetch(streamUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Accept": "text/event-stream",
+          "Cache-Control": "no-cache",
         },
         body: JSON.stringify({ message: content }),
       });
 
-      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-      if (data.success) {
-        const assistantMessage: Message = {
-          id: (Date.now() + 2).toString(),
-          role: "assistant",
-          content: "Assistant response",
-          response: data.response,
-          timestamp: new Date(),
-        };
+      // Parse the response body as a stream
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
 
-        setMessages(prev => {
-          const newMessages = [...prev];
-          newMessages[newMessages.length - 1] = assistantMessage;
-          return newMessages;
-        });
-      } else {
-        setMessages(prev => {
-          const newMessages = [...prev];
-          newMessages[newMessages.length - 1] = {
-            ...newMessages[newMessages.length - 1],
-            content: `Error: ${data.error}`,
-            isLoading: false,
-          };
-          return newMessages;
-        });
+      if (!reader) {
+        throw new Error("Response body is not readable");
+      }
+
+      let buffer = "";
+      let firstBlockReceived = false;
+      
+      while (true) {
+        const { done, value } = await reader.read();
+        
+        if (done) break;
+        
+        buffer += decoder.decode(value, { stream: true });
+        
+        // Process complete SSE messages
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || ""; // Keep incomplete line in buffer
+        
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const eventData = JSON.parse(line.slice(6));
+              
+              if (eventData.type === "block") {
+                // Add the new block to the assistant message
+                setMessages(prev => {
+                  const newMessages = [...prev];
+                  const assistantIndex = newMessages.findIndex(msg => msg.id === assistantMessageId);
+                  
+                  if (assistantIndex !== -1) {
+                    const updatedMessage = { ...newMessages[assistantIndex] };
+                    if (updatedMessage.response) {
+                      updatedMessage.response = {
+                        ...updatedMessage.response,
+                        blocks: [...updatedMessage.response.blocks, eventData.block]
+                      };
+                    }
+                    // Remove thinking state on first block and start streaming indicator
+                    if (!firstBlockReceived) {
+                      updatedMessage.isLoading = false;
+                      updatedMessage.isStreaming = true;
+                      updatedMessage.content = "Assistant response";
+                      setIsLoading(false);
+                    }
+                    newMessages[assistantIndex] = updatedMessage;
+                  }
+                  
+                  return newMessages;
+                });
+                
+                // Mark that we've received the first block
+                if (!firstBlockReceived) {
+                  firstBlockReceived = true;
+                }
+              } else if (eventData.type === "complete") {
+                // Mark the response as complete
+                setMessages(prev => {
+                  const newMessages = [...prev];
+                  const assistantIndex = newMessages.findIndex(msg => msg.id === assistantMessageId);
+                  
+                  if (assistantIndex !== -1) {
+                    const updatedMessage = { ...newMessages[assistantIndex] };
+                    if (updatedMessage.response) {
+                      updatedMessage.response = {
+                        ...updatedMessage.response,
+                        stop_reason: eventData.stop_reason,
+                        total_iterations: eventData.total_iterations
+                      };
+                    }
+                    // Ensure loading state is false and stop streaming indicator
+                    updatedMessage.isLoading = false;
+                    updatedMessage.isStreaming = false;
+                    updatedMessage.content = "Assistant response";
+                    newMessages[assistantIndex] = updatedMessage;
+                  }
+                  
+                  return newMessages;
+                });
+                // Ensure global loading state is false (should already be false from first block)
+                setIsLoading(false);
+              } else if (eventData.type === "error") {
+                throw new Error(eventData.error);
+              }
+            } catch (parseError) {
+              console.error("Error parsing SSE data:", parseError);
+            }
+          }
+        }
       }
     } catch (error) {
       console.error("Error sending message:", error);
       setMessages(prev => {
         const newMessages = [...prev];
-        newMessages[newMessages.length - 1] = {
-          ...newMessages[newMessages.length - 1],
-          content: `Error: Failed to send message`,
-          isLoading: false,
-        };
+        const assistantIndex = newMessages.findIndex(msg => msg.id === assistantMessageId);
+        
+        if (assistantIndex !== -1) {
+          newMessages[assistantIndex] = {
+            ...newMessages[assistantIndex],
+            content: `Error: ${error instanceof Error ? error.message : 'Failed to send message'}`,
+            isLoading: false,
+            isStreaming: false,
+          };
+        }
+        
         return newMessages;
       });
-    } finally {
       setIsLoading(false);
     }
   };

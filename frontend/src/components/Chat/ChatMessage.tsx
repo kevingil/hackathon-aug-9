@@ -155,11 +155,20 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
                   return null;
               }
             })}
-            <div className="px-4 py-2 bg-gray-50 border-t border-gray-100">
-              <p className="text-xs text-gray-500">
-                Completed in {message.response.total_iterations} iteration{message.response.total_iterations !== 1 ? 's' : ''} • {message.timestamp.toLocaleTimeString()}
-              </p>
-            </div>
+            {message.isStreaming ? (
+              <div className="px-4 py-2 bg-gray-50 border-t border-gray-100">
+                <div className="flex items-center space-x-2">
+                  <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-600"></div>
+                  <span className="text-xs text-gray-500">Assistant is thinking...</span>
+                </div>
+              </div>
+            ) : (
+              <div className="px-4 py-2 bg-gray-50 border-t border-gray-100">
+                <p className="text-xs text-gray-500">
+                  Completed in {message.response.total_iterations} iteration{message.response.total_iterations !== 1 ? 's' : ''} • {message.timestamp.toLocaleTimeString()}
+                </p>
+              </div>
+            )}
           </div>
         ) : (
           <div className="px-4 py-3">

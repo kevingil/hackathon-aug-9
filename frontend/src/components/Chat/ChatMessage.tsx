@@ -1,6 +1,7 @@
 import type { Message } from "../Chat/ChatInterface";
 import ThinkingBlock from "../Chat/ThinkingBlock";
 import ToolBlock from "../Chat/ToolBlock";
+import UserAnalysisBlock from "./UserAnalysisBlock";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -96,6 +97,13 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
                       toolName={block.tool_name || ""}
                       toolInput={block.tool_input}
                       toolResult={block.tool_result}
+                    />
+                  );
+                case "user_analysis":
+                  return (
+                    <UserAnalysisBlock
+                      key={index}
+                      userAnalysis={block.user_analysis}
                     />
                   );
                 case "text":

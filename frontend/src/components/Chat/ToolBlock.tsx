@@ -64,6 +64,43 @@ interface UnifiedSearchResponse {
   };
 }
 
+// User Analysis Artifact Types
+interface AccountAnalysis {
+  id: string;
+  name: string;
+  analysis: string;
+  error: boolean;
+  balance?: number;
+  expense_count?: number;
+  deposit_count?: number;
+  account_type?: string;
+}
+
+interface FinancialRecommendation {
+  category: string;
+  title: string;
+  description: string;
+  priority: "high" | "medium" | "low";
+  action_items: string[];
+}
+
+interface UserAnalysis {
+  id: string;
+  name: string;
+  account_analysis: AccountAnalysis[];
+  overall_analysis: string;
+  error: boolean;
+  recommendations?: FinancialRecommendation[];
+  total_balance?: number;
+  total_accounts?: number;
+  monthly_expenses?: number;
+  savings_rate?: number;
+}
+
+interface UserAnalysisResponse {
+  user_analysis: UserAnalysis;
+}
+
 interface ToolBlockProps {
   type: "use" | "result";
   toolName: string;
@@ -210,6 +247,166 @@ const SearchResultsArtifact = ({ results }: { results: UnifiedSearchResponse }) 
   );
 };
 
+const AccountCard = ({ account }: { account: AccountAnalysis }) => {
+  const formatBalance = (balance: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2
+    }).format(balance);
+  };
+
+  const parseAccountDetails = (analysis: string) => {
+    const balanceMatch = analysis.match(/balance \$?([\d,]+\.?\d*)/);
+    const expenseMatch = analysis.match(/(\d+) expenses?/);
+    const depositMatch = analysis.match(/(\d+) deposits?/);
+    
+    return {
+      balance: balanceMatch ? parseFloat(balanceMatch[1].replace(/,/g, '')) : account.balance,
+      expenses: expenseMatch ? parseInt(expenseMatch[1]) : account.expense_count,
+      deposits: depositMatch ? parseInt(depositMatch[1]) : account.deposit_count
+    };
+  };
+
+  const details = parseAccountDetails(account.analysis);
+
+  return (
+    <div className="bg-white border rounded-lg p-3 mb-2">
+      <div className="flex items-center justify-between mb-2">
+        <h4 className="font-semibold text-gray-900" style={{fontSize: '13px'}}>{account.name}</h4>
+        {details.balance && (
+          <span className="font-bold text-green-600" style={{fontSize: '13px'}}>
+            {formatBalance(details.balance)}
+          </span>
+        )}
+      </div>
+      
+      {(details.expenses || details.deposits) && (
+        <div className="flex space-x-4 mb-2">
+          {details.expenses && (
+            <div className="flex items-center space-x-1">
+              <span className="text-red-500" style={{fontSize: '10px'}}>↗</span>
+              <span className="text-gray-600" style={{fontSize: '10px'}}>{details.expenses} expenses</span>
+            </div>
+          )}
+          {details.deposits && (
+            <div className="flex items-center space-x-1">
+              <span className="text-green-500" style={{fontSize: '10px'}}>↙</span>
+              <span className="text-gray-600" style={{fontSize: '10px'}}>{details.deposits} deposits</span>
+            </div>
+          )}
+        </div>
+      )}
+      
+      <p className="text-gray-700" style={{fontSize: '11px'}}>{account.analysis}</p>
+    </div>
+  );
+};
+
+const RecommendationCard = ({ recommendation }: { recommendation: FinancialRecommendation }) => {
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'high': return 'bg-red-100 text-red-700 border-red-200';
+      case 'medium': return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+      case 'low': return 'bg-green-100 text-green-700 border-green-200';
+      default: return 'bg-gray-100 text-gray-700 border-gray-200';
+    }
+  };
+
+  return (
+    <div className="bg-white border rounded-lg p-3 mb-2">
+      <div className="flex items-center justify-between mb-2">
+        <h4 className="font-semibold text-gray-900" style={{fontSize: '13px'}}>{recommendation.title}</h4>
+        <span className={`px-2 py-1 rounded text-xs border ${getPriorityColor(recommendation.priority)}`}>
+          {recommendation.priority}
+        </span>
+      </div>
+      <p className="text-gray-600 mb-2" style={{fontSize: '11px'}}>{recommendation.description}</p>
+      {recommendation.action_items.length > 0 && (
+        <ul className="space-y-1">
+          {recommendation.action_items.map((item, idx) => (
+            <li key={idx} className="flex items-start space-x-2">
+              <span className="text-blue-500 mt-0.5" style={{fontSize: '10px'}}>•</span>
+              <span className="text-gray-700" style={{fontSize: '10px'}}>{item}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
+
+const UserAnalysisArtifact = ({ results }: { results: UserAnalysisResponse }) => {
+  const { user_analysis } = results;
+  
+  // Parse recommendations from overall_analysis if not provided
+  const parseRecommendations = (text: string): FinancialRecommendation[] => {
+    const sections = text.split(/\d+\.\s+\*\*([^*]+)\*\*:/);
+    const recommendations: FinancialRecommendation[] = [];
+    
+    for (let i = 1; i < sections.length; i += 2) {
+      const category = sections[i].trim();
+      const content = sections[i + 1]?.trim() || '';
+      
+      // Extract key points as action items
+      const actionItems = content
+        .split(/[-•]\s+/)
+        .slice(1)
+        .map(item => item.trim().replace(/\n.*/s, ''))
+        .filter(item => item.length > 0);
+
+      recommendations.push({
+        category,
+        title: category,
+        description: content.split(/[-•]/)[0]?.trim() || '',
+        priority: "medium" as const,
+        action_items: actionItems.slice(0, 3) // Limit to 3 items
+      });
+    }
+    
+    return recommendations;
+  };
+
+  const recommendations = user_analysis.recommendations || parseRecommendations(user_analysis.overall_analysis);
+  
+  return (
+    <div className="space-y-3">
+      {/* Header */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+        <h3 className="font-semibold text-blue-900 mb-1" style={{fontSize: '14px'}}>
+          💰 Financial Analysis for {user_analysis.name}
+        </h3>
+        <div className="flex space-x-4 text-blue-700" style={{fontSize: '11px'}}>
+          <span>📊 {user_analysis.account_analysis.length} accounts</span>
+          {user_analysis.total_balance && (
+            <span>💵 Total: ${user_analysis.total_balance.toLocaleString()}</span>
+          )}
+        </div>
+      </div>
+
+      {/* Account Analysis */}
+      {user_analysis.account_analysis.length > 0 && (
+        <div>
+          <p className="font-semibold text-gray-700 mb-2" style={{fontSize: '12px'}}>🏦 Account Overview</p>
+          {user_analysis.account_analysis.map((account) => (
+            <AccountCard key={account.id} account={account} />
+          ))}
+        </div>
+      )}
+
+      {/* Recommendations */}
+      {recommendations.length > 0 && (
+        <div>
+          <p className="font-semibold text-gray-700 mb-2" style={{fontSize: '12px'}}>💡 Key Recommendations</p>
+          {recommendations.slice(0, 3).map((recommendation, idx) => (
+            <RecommendationCard key={idx} recommendation={recommendation} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const ToolBlock = ({ type, toolName, toolInput, toolResult }: ToolBlockProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   
@@ -217,6 +414,9 @@ const ToolBlock = ({ type, toolName, toolInput, toolResult }: ToolBlockProps) =>
     const lowerName = name.toLowerCase();
     if (lowerName.includes('search') || lowerName.includes('finance')) {
       return "🔍";
+    }
+    if (lowerName.includes('analyze_user_account') || lowerName.includes('user_analysis')) {
+      return "💰";
     }
     switch (lowerName) {
       case "weather":
@@ -238,13 +438,23 @@ const ToolBlock = ({ type, toolName, toolInput, toolResult }: ToolBlockProps) =>
            typeof result.search_results.search_results === 'object';
   };
 
-  const shouldShowArtifact = type === "result" && isSearchResult(toolResult);
+  // Check if toolResult matches UserAnalysisResponse schema
+  const isUserAnalysisResult = (result: any): result is UserAnalysisResponse => {
+    return result && 
+           typeof result === 'object' && 
+           'user_analysis' in result &&
+           typeof result.user_analysis === 'object' &&
+           'account_analysis' in result.user_analysis &&
+           Array.isArray(result.user_analysis.account_analysis);
+  };
+
+  const shouldShowArtifact = type === "result" && (isSearchResult(toolResult) || isUserAnalysisResult(toolResult));
 
   return (
     <div className="border-t border-gray-100 bg-gray-50">
       <div className="px-3 py-2">
         <div className="flex items-center justify-between">
-          {((type === "use" && toolInput && !(toolInput.q || toolInput.query)) || (type === "result" && !shouldShowArtifact)) && (
+          {((type === "use" && toolInput && !(toolInput.q || toolInput.query) && toolName !== "analyze_user_account" && toolName !== "analyze_results") || (type === "result" && !shouldShowArtifact)) && (
             <button
               onClick={() => setIsExpanded(!isExpanded)}
               className="text-xs text-gray-300 hover:text-gray-400 transition-all"
@@ -260,6 +470,14 @@ const ToolBlock = ({ type, toolName, toolInput, toolResult }: ToolBlockProps) =>
               <div className="text-gray-600" style={{fontSize: '11px'}}>
                 {getToolIcon(toolName)} Looking for <span className="italic">{toolInput.q || toolInput.query}</span>
               </div>
+            ) : toolName === "analyze_user_account" ? (
+              <div className="text-gray-600" style={{fontSize: '11px'}}>
+                {getToolIcon(toolName)} Analyzing your financial data...
+              </div>
+            ) : toolName === "analyze_results" ? (
+              <div className="text-gray-600" style={{fontSize: '11px'}}>
+                {getToolIcon(toolName)} Processing analysis results...
+              </div>
             ) : (
               isExpanded && (
                 <div className="bg-white rounded border p-1.5 text-gray-600 font-mono" style={{fontSize: '10px'}}>
@@ -274,7 +492,11 @@ const ToolBlock = ({ type, toolName, toolInput, toolResult }: ToolBlockProps) =>
           <>
             {shouldShowArtifact ? (
               <div className="mt-2">
-                <SearchResultsArtifact results={toolResult} />
+                {isSearchResult(toolResult) ? (
+                  <SearchResultsArtifact results={toolResult} />
+                ) : isUserAnalysisResult(toolResult) ? (
+                  <UserAnalysisArtifact results={toolResult} />
+                ) : null}
               </div>
             ) : (
               isExpanded && (

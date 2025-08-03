@@ -6,13 +6,15 @@ import Logo from "../Logo";
 import { BASE_URL } from "../../api/const";
 
 export interface ChatBlock {
-  type: "thinking" | "redacted_thinking" | "text" | "tool_use" | "tool_result";
+  type: "thinking" | "redacted_thinking" | "text" | "tool_use" | "tool_result" | "user_analysis";
   content?: string;
   tool_name?: string;
   tool_input?: any;
   tool_result?: any;
   tool_id?: string;
   iteration?: number;
+  // For user analysis artifacts
+  user_analysis?: any;
 }
 
 export interface ChatResponse {

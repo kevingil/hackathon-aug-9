@@ -14,7 +14,7 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
   if (message.role === "user") {
     return (
       <div className="flex justify-end">
-        <div className="max-w-[70%] bg-blue-600 text-white rounded-lg px-4 py-2">
+        <div className="max-w-[90%] bg-blue-600 text-white rounded-lg px-4 py-2">
           <div className="prose prose-sm prose-invert max-w-none">
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
@@ -57,7 +57,7 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
   // Assistant message
   return (
     <div className="flex justify-start">
-      <div className="max-w-[85%] bg-white rounded-lg border border-gray-200 overflow-hidden">
+      <div className="max-w-[95%] bg-white rounded-lg border border-gray-200 overflow-hidden">
         {message.isLoading ? (
           <div className="px-4 py-3">
             <div className="flex items-center space-x-2">

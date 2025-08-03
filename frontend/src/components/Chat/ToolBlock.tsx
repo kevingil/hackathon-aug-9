@@ -74,59 +74,53 @@ interface ToolBlockProps {
 const MarketCard = ({ result }: { result: MarketResult }) => {
   const formatPrice = (price: number) => {
     if (price >= 1000) {
-      return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      return price.toLocaleString('en-US', { maximumFractionDigits: 0 });
     }
     return price.toFixed(2);
   };
 
   return (
-    <div className="bg-white border rounded p-3 mb-2">
-      <div className="flex items-center justify-between mb-1">
-        <div className="font-medium text-gray-900 text-sm">{result.name || result.stock}</div>
+    <div className="bg-white border rounded p-1.5 mb-1 text-xs">
+      <div className="flex items-center justify-between">
+        <div className="font-medium text-gray-900 truncate" style={{fontSize: '11px'}}>{result.name || result.stock}</div>
         {result.price && (
-          <div className="flex items-center space-x-1">
-            <span className="font-bold text-gray-900">${formatPrice(result.price)}</span>
+          <div className="flex items-center space-x-1 ml-2">
+            <span className="font-bold text-gray-900" style={{fontSize: '11px'}}>${formatPrice(result.price)}</span>
             {result.price_movement && (
-              <span className={`text-xs px-1 py-0.5 rounded ${
+              <span className={`px-1 py-0.5 rounded ${
                 result.price_movement.movement === "Up" 
                   ? "bg-green-100 text-green-700" 
                   : result.price_movement.movement === "Down" 
                   ? "bg-red-100 text-red-700" 
                   : "bg-gray-100 text-gray-700"
-              }`}>
+              }`} style={{fontSize: '9px'}}>
                 {result.price_movement.movement === "Up" ? "↗" : result.price_movement.movement === "Down" ? "↘" : "→"}
-                {result.price_movement.percentage && ` ${result.price_movement.percentage.toFixed(2)}%`}
+                {result.price_movement.percentage && ` ${result.price_movement.percentage.toFixed(1)}%`}
               </span>
             )}
           </div>
         )}
       </div>
-      {result.link && (
-        <a href={result.link} target="_blank" rel="noopener noreferrer" 
-           className="text-xs text-blue-600 hover:text-blue-800 underline">
-          View details →
-        </a>
-      )}
     </div>
   );
 };
 
 const OrganicCard = ({ result }: { result: OrganicResult }) => (
-  <div className="bg-white border rounded p-3 mb-2">
-    <div className="mb-1">
+  <div className="bg-white border rounded p-1.5 mb-1">
+    <div className="mb-0.5">
       {result.link ? (
         <a href={result.link} target="_blank" rel="noopener noreferrer" 
-           className="text-sm font-medium text-blue-600 hover:text-blue-800 underline">
+           className="font-medium text-blue-600 hover:text-blue-800 underline" style={{fontSize: '11px'}}>
           {result.title}
         </a>
       ) : (
-        <div className="text-sm font-medium text-gray-900">{result.title}</div>
+        <div className="font-medium text-gray-900" style={{fontSize: '11px'}}>{result.title}</div>
       )}
     </div>
     {result.snippet && (
-      <p className="text-xs text-gray-600 mb-1">{result.snippet}</p>
+      <p className="text-gray-600 mb-0.5 line-clamp-2" style={{fontSize: '10px'}}>{result.snippet}</p>
     )}
-    <div className="flex items-center space-x-2 text-xs text-gray-500">
+    <div className="flex items-center space-x-1 text-gray-500" style={{fontSize: '9px'}}>
       {result.source && <span>{result.source}</span>}
       {result.date && <span>• {result.date}</span>}
     </div>
@@ -134,27 +128,27 @@ const OrganicCard = ({ result }: { result: OrganicResult }) => (
 );
 
 const ForumCard = ({ result }: { result: ForumResult }) => (
-  <div className="bg-white border rounded p-3 mb-2">
-    <div className="mb-1">
+  <div className="bg-white border rounded p-1.5 mb-1">
+    <div className="mb-0.5">
       {result.link ? (
         <a href={result.link} target="_blank" rel="noopener noreferrer" 
-           className="text-sm font-medium text-blue-600 hover:text-blue-800 underline">
+           className="font-medium text-blue-600 hover:text-blue-800 underline" style={{fontSize: '11px'}}>
           {result.title}
         </a>
       ) : (
-        <div className="text-sm font-medium text-gray-900">{result.title}</div>
+        <div className="font-medium text-gray-900" style={{fontSize: '11px'}}>{result.title}</div>
       )}
     </div>
-    <div className="flex items-center space-x-2 text-xs text-gray-500 mb-2">
+    <div className="flex items-center space-x-1 text-gray-500 mb-1" style={{fontSize: '9px'}}>
       {result.source && <span>📋 {result.source}</span>}
       {result.date && <span>• {result.date}</span>}
     </div>
     {result.answers && result.answers.length > 0 && (
-      <div className="space-y-1">
-        {result.answers.slice(0, 2).map((answer, idx) => (
-          <div key={idx} className="bg-gray-50 rounded p-2">
+      <div className="space-y-0.5">
+        {result.answers.slice(0, 1).map((answer, idx) => (
+          <div key={idx} className="bg-gray-50 rounded p-1">
             {answer.snippet && (
-              <p className="text-xs text-gray-700">{answer.snippet}</p>
+              <p className="text-gray-700 line-clamp-1" style={{fontSize: '10px'}}>{answer.snippet}</p>
             )}
           </div>
         ))}
@@ -171,31 +165,33 @@ const SearchResultsArtifact = ({ results }: { results: UnifiedSearchResponse }) 
       'asia': 'Asian Markets',
       'us': 'US Markets', 
       'europe': 'European Markets',
-      'crypto': 'Cryptocurrency',
+      'crypto': 'Crypto',
       'currencies': 'Currencies',
       'futures': 'Futures',
-      'featured': 'Featured Stocks'
+      'featured': 'Featured'
     };
     return regionMap[region] || region.charAt(0).toUpperCase() + region.slice(1);
   };
   
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {/* Markets */}
       {search_results.markets && Object.entries(search_results.markets).map(([region, marketResults]) => (
         <div key={region}>
-          <p className="text-md font-semibold text-gray-700 mb-2 capitalize">📈 {getRegionDisplayName(region)}</p>
-          {marketResults.slice(0, 5).map((result, idx) => (
-            <MarketCard key={idx} result={result} />
-          ))}
+          <p className="font-semibold text-gray-700 mb-1" style={{fontSize: '12px'}}>📈 {getRegionDisplayName(region)}</p>
+          <div className="grid grid-cols-2 gap-1">
+            {marketResults.slice(0, 8).map((result, idx) => (
+              <MarketCard key={idx} result={result} />
+            ))}
+          </div>
         </div>
       ))}
       
       {/* Organic Results */}
       {search_results.organic_results && search_results.organic_results.length > 0 && (
         <div>
-          <h4 className="text-xs font-semibold text-gray-700 mb-2 uppercase">🔍 Search Results</h4>
-          {search_results.organic_results.slice(0, 3).map((result, idx) => (
+          <p className="font-semibold text-gray-700 mb-1" style={{fontSize: '12px'}}>🔍 Search Results</p>
+          {search_results.organic_results.slice(0, 2).map((result, idx) => (
             <OrganicCard key={idx} result={result} />
           ))}
         </div>
@@ -204,8 +200,8 @@ const SearchResultsArtifact = ({ results }: { results: UnifiedSearchResponse }) 
       {/* Forum Results */}
       {search_results.discussions_and_forums && search_results.discussions_and_forums.length > 0 && (
         <div>
-          <h4 className="text-xs font-semibold text-gray-700 mb-2 uppercase">💬 Discussions</h4>
-          {search_results.discussions_and_forums.slice(0, 2).map((result, idx) => (
+          <p className="font-semibold text-gray-700 mb-1" style={{fontSize: '12px'}}>💬 Discussions</p>
+          {search_results.discussions_and_forums.slice(0, 1).map((result, idx) => (
             <ForumCard key={idx} result={result} />
           ))}
         </div>
@@ -246,7 +242,7 @@ const ToolBlock = ({ type, toolName, toolInput, toolResult }: ToolBlockProps) =>
 
   return (
     <div className="border-t border-gray-100 bg-gray-50">
-      <div className="px-4 py-3">
+      <div className="px-3 py-2">
         <div className="flex items-center justify-between">
           {((type === "use" && toolInput && !(toolInput.q || toolInput.query)) || (type === "result" && !shouldShowArtifact)) && (
             <button
@@ -259,14 +255,14 @@ const ToolBlock = ({ type, toolName, toolInput, toolResult }: ToolBlockProps) =>
         </div>
 
         {type === "use" && (
-          <div className="text-xs text-gray-500 mt-2">
+          <div className="text-xs text-gray-500 mt-1">
             {toolInput && (toolInput.q || toolInput.query) ? (
-              <div className="text-gray-600">
+              <div className="text-gray-600" style={{fontSize: '11px'}}>
                 {getToolIcon(toolName)} Looking for <span className="italic">{toolInput.q || toolInput.query}</span>
               </div>
             ) : (
               isExpanded && (
-                <div className="bg-white rounded border p-2 text-gray-600 font-mono">
+                <div className="bg-white rounded border p-1.5 text-gray-600 font-mono" style={{fontSize: '10px'}}>
                   {JSON.stringify(toolInput, null, 2)}
                 </div>
               )
@@ -277,21 +273,21 @@ const ToolBlock = ({ type, toolName, toolInput, toolResult }: ToolBlockProps) =>
         {type === "result" && (
           <>
             {shouldShowArtifact ? (
-              <div className="mt-3">
+              <div className="mt-2">
                 <SearchResultsArtifact results={toolResult} />
               </div>
             ) : (
               isExpanded && (
-                <div className="text-xs text-gray-500 mt-2">
+                <div className="text-xs text-gray-500 mt-1">
                   {toolInput && (
-                    <div className="mb-2">
-                      <p className="text-gray-400 mb-1">Input:</p>
-                      <div className="bg-white rounded border p-2 text-gray-600 font-mono">
+                    <div className="mb-1">
+                      <p className="text-gray-400 mb-0.5" style={{fontSize: '10px'}}>Input:</p>
+                      <div className="bg-white rounded border p-1.5 text-gray-600 font-mono" style={{fontSize: '10px'}}>
                         {JSON.stringify(toolInput, null, 2)}
                       </div>
                     </div>
                   )}
-                  <div className="bg-white rounded border p-2 text-gray-600 font-mono">
+                  <div className="bg-white rounded border p-1.5 text-gray-600 font-mono" style={{fontSize: '10px'}}>
                     {JSON.stringify(toolResult, null, 2)}
                   </div>
                 </div>

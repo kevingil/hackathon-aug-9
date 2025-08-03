@@ -269,7 +269,7 @@ class ChatService:
         try:
             if tool_name == "analyze_user_account":
                 print(f"MOCK USER DATA: {mock_user_data[0]}")
-                result = analyze_user_account(mock_user_data[0])
+                result = analyze_user_account()
                 return {"search_results": result}
             elif tool_name == "analyze_results":
                 result = analyze_results(tool_input["results"])

@@ -2,6 +2,7 @@
 
 ![App Screenshot](frontend/public/image-1.png)
 ![App Screenshot](frontend/public/image-2.png)
+![App Screenshot](frontend/public/image-3.png)
 
 ## About
 

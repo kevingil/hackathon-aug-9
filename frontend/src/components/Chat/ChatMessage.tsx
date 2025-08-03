@@ -86,7 +86,6 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
                       type="use"
                       toolName={block.tool_name || ""}
                       toolInput={block.tool_input}
-                      iteration={block.iteration}
                     />
                   );
                 case "tool_result":
@@ -97,7 +96,6 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
                       toolName={block.tool_name || ""}
                       toolInput={block.tool_input}
                       toolResult={block.tool_result}
-                      iteration={block.iteration}
                     />
                   );
                 case "text":

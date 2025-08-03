@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { PROJECT_NAME, PROJECT_LOGO } from "../../api/const";
+import { PROJECT_NAME } from "../../api/const";
 import { BASE_URL } from "../../api/const";
 
 const Navigation = () => {
@@ -38,7 +38,7 @@ const Navigation = () => {
       <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
         <Link to="/" className="flex items-center gap-2">
           <img
-            src={PROJECT_LOGO}
+            src={''}
             alt="Logo"
             className="w-24 h-12 object-contain"
           />

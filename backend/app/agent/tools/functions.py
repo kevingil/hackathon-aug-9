@@ -100,18 +100,51 @@ def analyze_results(results: ToolResults):
 def analyze_user_account() -> UserAnalysis:
     """Analyze a user account."""
     user_data = mock_user_data[0]
-    user_formated = format_user_account_to_markdown(user_data)
+    user_formatted = format_user_account_to_markdown(user_data)
+    
+    # Call Claude to analyze the financial data
     response = CLIENT.messages.create(
         model="claude-3-haiku-20240307",
         max_tokens=4000,
         messages=[
             {
                 "role": "user",
-                "content": f"analyze my finances to provide useful advice on how to improve my finances: {user_formated}",
+                "content": f"analyze my finances to provide useful advice on how to improve my finances: {user_formatted}",
             }
         ],
     )
-    return response
+    
+    # Extract the analysis text from Claude's response
+    overall_analysis = ""
+    if hasattr(response, 'content') and response.content:
+        for content_block in response.content:
+            if hasattr(content_block, 'text'):
+                overall_analysis += content_block.text
+    
+    # Create structured account analysis for each account
+    account_analyses = []
+    for account in user_data.accounts:
+        expense_count = len(account.expenses)
+        deposit_count = len(account.deposits)
+        
+        account_analysis = AccountAnalysis(
+            id=str(account.id),
+            name=account.name,
+            analysis=f"Account with balance ${account.balance:.2f}, {expense_count} expenses, {deposit_count} deposits",
+            error=False
+        )
+        account_analyses.append(account_analysis)
+    
+    # Create structured UserAnalysis object
+    user_analysis = UserAnalysis(
+        id=str(user_data.id),
+        name=f"User {user_data.id}",
+        account_analysis=account_analyses,
+        overall_analysis=overall_analysis,
+        error=False
+    )
+    
+    return user_analysis
 
 
 def parse_composio_search_results(composio_result: dict) -> dict:

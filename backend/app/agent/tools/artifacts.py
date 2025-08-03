@@ -65,3 +65,45 @@ class SearchResults(BaseModel):
 
 class UnifiedSearchResponse(BaseModel):
     search_results: SearchResults
+
+
+# === USER ANALYSIS ARTIFACTS ===
+
+class AccountAnalysis(BaseModel):
+    id: str
+    name: str
+    analysis: str
+    error: bool
+    # Additional structured fields we can extract
+    balance: Optional[float] = None
+    expense_count: Optional[int] = None
+    deposit_count: Optional[int] = None
+    account_type: Optional[str] = None
+
+
+class FinancialRecommendation(BaseModel):
+    category: str  # e.g., "Budgeting & Cash Flow", "Investment Strategy"
+    title: str
+    description: str
+    priority: Literal["high", "medium", "low"] = "medium"
+    action_items: List[str] = []
+
+
+class UserAnalysis(BaseModel):
+    id: str
+    name: str
+    account_analysis: List[AccountAnalysis]
+    overall_analysis: str
+    error: bool
+    # Parsed recommendations from overall_analysis
+    recommendations: Optional[List[FinancialRecommendation]] = None
+    # Summary metrics
+    total_balance: Optional[float] = None
+    total_accounts: Optional[int] = None
+    monthly_expenses: Optional[float] = None
+    savings_rate: Optional[float] = None
+
+
+class UserAnalysisArtifact(BaseModel):
+    type: Literal["user_analysis"] = "user_analysis"
+    user_analysis: UserAnalysis

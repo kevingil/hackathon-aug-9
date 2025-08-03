@@ -1,5 +1,6 @@
 import anthropic  # type: ignore
 import json
+import re
 from app.agent.tools.functions import (  # type: ignore
     analyze_results,
     analyze_user_account,
@@ -616,8 +617,34 @@ Remember: Always ground your advice in the user's actual financial data combined
             if tool_name == "analyze_user_account":
                 print(f"MOCK USER DATA: {mock_user_data[0]}")
                 result = analyze_user_account()
-                # Return the UserAnalysis object as a dict for JSON serialization
-                return {"user_analysis": result.model_dump()}
+                # Return structured artifact for frontend
+                user_analysis_data = result.model_dump()
+                
+                # Calculate summary metrics from account data
+                total_balance = 0
+                for account in user_analysis_data.get("account_analysis", []):
+                    # Extract balance from analysis string
+                    analysis = account.get("analysis", "")
+                    balance_match = re.search(r"balance \$?([\d,]+\.?\d*)", analysis)
+                    if balance_match:
+                        balance = float(balance_match.group(1).replace(",", ""))
+                        total_balance += balance
+                        account["balance"] = balance
+                    
+                    # Extract counts from analysis string  
+                    expense_match = re.search(r"(\d+) expenses?", analysis)
+                    if expense_match:
+                        account["expense_count"] = int(expense_match.group(1))
+                    
+                    deposit_match = re.search(r"(\d+) deposits?", analysis)
+                    if deposit_match:
+                        account["deposit_count"] = int(deposit_match.group(1))
+                
+                user_analysis_data["total_balance"] = total_balance
+                user_analysis_data["total_accounts"] = len(user_analysis_data.get("account_analysis", []))
+                
+                print(f"Structured user analysis data: {user_analysis_data}")
+                return {"user_analysis": user_analysis_data}
             elif tool_name == "analyze_results":
                 result = analyze_results(tool_input["results"])
                 # Return the ToolResultsAnalysis object as a dict for JSON serialization

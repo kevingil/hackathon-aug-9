@@ -1,16 +1,16 @@
 import anthropic  # type: ignore
 import json
-from app.agent.tools.example import weather  # type: ignore
 from app.agent.tools.functions import (  # type: ignore
-    analyze_results, 
+    analyze_results,
     analyze_user_account,
     parse_composio_search_results,
     parse_composio_finance_search_results,
     parse_composio_news_search_results,
-    parse_composio_event_search_results
+    parse_composio_event_search_results,
 )
 from app.agent.tools.definitions import tool_definitions  # type: ignore
 from composio import Composio  # type: ignore
+from app.chat.accounts.data import mock_user_data
 
 
 class ChatService:
@@ -268,7 +268,8 @@ class ChatService:
 
         try:
             if tool_name == "analyze_user_account":
-                result = analyze_user_account(tool_input["user"])
+                print(f"MOCK USER DATA: {mock_user_data[0]}")
+                result = analyze_user_account(mock_user_data[0])
                 return {"search_results": result}
             elif tool_name == "analyze_results":
                 result = analyze_results(tool_input["results"])

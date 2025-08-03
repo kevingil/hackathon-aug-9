@@ -101,9 +101,8 @@ def analyze_user_account() -> str:
     """Analyze a user account."""
     user_formated = format_user_account_to_markdown(mock_user_data[0])
     response = CLIENT.messages.create(
-        model="claude-3-7-sonnet-20250219",
+        model="claude-3-haiku-20240307",
         max_tokens=4000,
-        thinking={"type": "enabled", "budget_tokens": 2000},
         messages=[
             {
                 "role": "user",
@@ -111,8 +110,7 @@ def analyze_user_account() -> str:
             }
         ],
     )
-    print(f"RESPONSE: {response}")
-    return response
+    return response.content
 
 
 def parse_composio_search_results(composio_result: dict) -> dict:

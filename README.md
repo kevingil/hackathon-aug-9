@@ -1,9 +1,5 @@
 # Rocket Agent - Personal Financial AI Assistant
 
-<div align="center">
-  <img src="frontend/public/logo.png" alt="Logo" style="max-width: 200px;">
-</div>
-
 ![App Screenshot](frontend/public/image.png)
 
 ## About

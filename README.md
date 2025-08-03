@@ -1,6 +1,7 @@
 # Rocket Agent - Personal Financial AI Assistant
 
-![App Screenshot](frontend/public/image.png)
+![App Screenshot](frontend/public/image-1.png)
+![App Screenshot](frontend/public/image-2.png)
 
 ## About
 

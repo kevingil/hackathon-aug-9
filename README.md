@@ -1,4 +1,5 @@
-# Rocket Agent - Personal Financial AI Assistant
+# Rocket Agent - AI Personal Financial Advisor
+
 
 ![App Screenshot](frontend/public/image-1.png)
 ![App Screenshot](frontend/public/image-2.png)
@@ -6,7 +7,7 @@
 
 ## About
 
-Rocket Agent is an intelligent financial AI assistant that provides personalized guidance and accountability for your financial decisions. Unlike traditional passive financial dashboards, Rocket Agent creates an active feedback loop to help you stay on track with your financial goals.
+Rocket Agent is an intelligent AI financial advisor that provides personalized guidance and accountability for your financial decisions. Unlike traditional passive financial dashboards, Rocket Agent creates an active feedback loop to help you stay on track with your financial goals.
 
 ## Inspiration
 Most people don't stick to budgets. Financial tools are passive dashboards with no feedback loop or accountability. It's hard to know what to change — until it's too late.
